@@ -269,7 +269,7 @@ function buildEmailHTML({ name, finishName, finishColor, quantity, engrave, subt
             </td>
           </tr>
 
-          <!-- ── FOOTER ── -->
+          <!-- ── FOOTER ── --> 
           <tr>
             <td style="
               background-color:#150b08;

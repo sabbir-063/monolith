@@ -58,6 +58,38 @@
 .config__add { position: relative; justify-content: center; overflow: visible; }
 .config__fine { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; color: var(--bone-dim); text-align: center; }
 
+/* quantity picker */
+.config__qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.config__qty-btn {
+  width: 42px;
+  height: 44px;
+  font-size: 1.25rem;
+  color: var(--bone-dim);
+  transition: all 0.18s var(--ease);
+  border-right: 1px solid var(--line);
+  line-height: 1;
+  flex: none;
+}
+.config__qty-btn:last-child { border-right: none; border-left: 1px solid var(--line); }
+.config__qty-btn:hover:not(:disabled) { background: var(--clay-700, rgba(255,255,255,0.04)); color: var(--bone); }
+.config__qty-btn:disabled { opacity: 0.28; cursor: not-allowed; }
+.config__qty-val {
+  min-width: 56px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--bone);
+  padding: 0 4px;
+  line-height: 44px;
+}
+
 /* dust burst */
 .config__burst { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
 .config__particle {

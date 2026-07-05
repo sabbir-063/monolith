@@ -1,0 +1,47 @@
+/* ============================================================
+   MONOLITH — Design tokens
+   Palette is drawn from the brick's own world: fired clay,
+   oxblood body, kiln-orange heat, bone-white limewash.
+   ============================================================ */
+:root {
+  /* Grounds (warm, never pure black) */
+  --clay-900: #150b08;
+  --clay-850: #1c0f0a;
+  --clay-800: #241410;
+  --clay-700: #341a12;
+
+  /* The brick itself */
+  --brick: #9b2d20;
+  --brick-light: #b5361f;
+
+  /* Kiln heat — the single bright accent, used sparingly */
+  --kiln: #e2562a;
+  --kiln-soft: #f08a4b;
+
+  /* Limewash / bone — primary type on dark, light-section ground */
+  --bone: #ece4d6;
+  --bone-dim: #b9ad9b;
+  --ash: #2b1a14;
+
+  --line: rgba(236, 228, 214, 0.12);
+  --line-dark: rgba(21, 11, 8, 0.14);
+
+  /* Type */
+  --font-display: "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Type scale (fluid) */
+  --fs-eyebrow: clamp(0.7rem, 0.65rem + 0.2vw, 0.78rem);
+  --fs-body: clamp(1rem, 0.96rem + 0.25vw, 1.125rem);
+  --fs-h3: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+  --fs-h2: clamp(2rem, 1.4rem + 3vw, 3.5rem);
+  --fs-display: clamp(3.2rem, 1.5rem + 9vw, 9rem);
+
+  /* Layout */
+  --maxw: 1200px;
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --radius: 4px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

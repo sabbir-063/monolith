@@ -1,0 +1,26 @@
+{
+  "name": "monolith",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MONOLITH — a one-page luxury store for a single red brick.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.114.3",
+    "@react-three/fiber": "^8.17.10",
+    "framer-motion": "^11.11.17",
+    "gsap": "^3.12.5",
+    "lenis": "^1.1.17",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.10"
+  }
+}

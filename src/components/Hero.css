@@ -1,0 +1,106 @@
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 5rem;
+  overflow: hidden;
+  background: var(--clay-900);
+}
+
+/* warm radial glow behind the brick — the kiln */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 55% at 72% 42%, rgba(226, 86, 42, 0.18), transparent 60%),
+    radial-gradient(40% 40% at 20% 90%, rgba(155, 45, 32, 0.16), transparent 65%);
+  pointer-events: none;
+}
+
+.hero__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: clamp(1rem, 4vw, 3rem);
+  flex: 1;
+}
+
+.hero__copy { max-width: 36rem; }
+
+.hero__title {
+  font-size: var(--fs-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 1.1rem 0 1.4rem;
+}
+.hero__title span { color: var(--kiln); }
+
+.hero__lede {
+  font-size: clamp(1.05rem, 0.98rem + 0.5vw, 1.3rem);
+  color: var(--bone-dim);
+  max-width: 40ch;
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+.hero__price { font-family: var(--font-mono); font-size: 0.85rem; color: var(--bone-dim); letter-spacing: 0.05em; }
+.hero__price strong { color: var(--bone); font-weight: 700; }
+
+.hero__stage {
+  position: relative;
+  height: clamp(320px, 46vh, 540px);
+}
+.hero__stage canvas { cursor: grab; }
+.hero__stage canvas:active { cursor: grabbing; }
+.hero__drag {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  opacity: 0.7;
+}
+
+.hero__foot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 1.5rem 2rem;
+}
+.hero__edition { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.16em; color: var(--bone-dim); }
+.hero__scroll {
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--bone-dim);
+}
+.hero__scroll-line {
+  width: 1px; height: 38px;
+  background: linear-gradient(var(--kiln), transparent);
+  animation: scrollPulse 2s var(--ease) infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { transform: scaleY(0.6); opacity: 0.4; transform-origin: top; }
+  50% { transform: scaleY(1); opacity: 1; transform-origin: top; }
+}
+
+@media (max-width: 880px) {
+  .hero__grid { grid-template-columns: 1fr; }
+  .hero__stage { order: -1; height: clamp(260px, 38vh, 380px); }
+  .hero__copy { max-width: none; }
+  .hero__foot { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__scroll-line { animation: none; }
+}

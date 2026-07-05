@@ -1,0 +1,45 @@
+.craft {
+  background: var(--bone);
+  color: var(--clay-900);
+}
+.craft .eyebrow { color: var(--brick); }
+.craft .eyebrow::before { background: var(--brick); }
+.craft .masonry { opacity: 0.18; margin-bottom: clamp(2.5rem, 6vw, 4rem); }
+.craft .masonry__brick { background: rgba(21, 11, 8, 0.16); }
+
+.craft__head {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: end;
+  margin-bottom: clamp(3rem, 7vw, 5rem);
+}
+.craft__title { margin-top: 1.2rem; font-size: clamp(2rem, 1rem + 4.5vw, 4rem); }
+.craft__title em { color: var(--brick); font-style: normal; }
+.craft__head-note p { color: var(--ash); font-size: 1.05rem; }
+
+.craft__steps {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line-dark);
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.craft__step {
+  background: var(--bone);
+  padding: clamp(1.4rem, 3vw, 2rem);
+  display: flex; flex-direction: column; gap: 0.6rem;
+}
+.craft__no { font-family: var(--font-mono); font-size: 0.78rem; color: var(--brick); letter-spacing: 0.1em; }
+.craft__step h3 { font-size: 1.4rem; }
+.craft__step p { color: var(--ash); font-size: 0.95rem; }
+
+@media (max-width: 880px) {
+  .craft__head { grid-template-columns: 1fr; }
+  .craft__steps { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 540px) {
+  .craft__steps { grid-template-columns: 1fr; }
+}

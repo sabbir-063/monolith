@@ -1,0 +1,24 @@
+.manifesto {
+  background: var(--clay-850);
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  border-block: 1px solid var(--line);
+}
+.manifesto__inner { width: 100%; }
+.manifesto__lines { margin-top: 2.5rem; display: flex; flex-direction: column; gap: clamp(1rem, 3vw, 2rem); }
+.manifesto__line {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 1rem + 5vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+.manifesto__line span { display: block; }
+.manifesto__line span:nth-child(2) { color: var(--kiln); }
+
+/* When reduced motion is on, the GSAP dim never runs; ensure full legibility. */
+@media (prefers-reduced-motion: reduce) {
+  .manifesto { min-height: auto; padding-block: clamp(4rem, 10vw, 8rem); }
+  .manifesto__line { opacity: 1 !important; }
+}

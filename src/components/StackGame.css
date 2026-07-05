@@ -1,0 +1,45 @@
+.game { background: var(--clay-850); border-block: 1px solid var(--line); }
+.game__head {
+  display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 2rem;
+}
+.game__head h2 { margin-top: 0.9rem; }
+.game__sub { color: var(--bone-dim); max-width: 44ch; margin-top: 0.6rem; }
+
+.game__scoreboard { display: flex; gap: 1.5rem; }
+.game__score { text-align: right; }
+.game__score-num { font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; color: var(--kiln); line-height: 1; display: block; }
+.game__score:last-child .game__score-num { color: var(--bone); }
+.game__score-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bone-dim); }
+
+.game__stage {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(60% 50% at 50% 100%, rgba(226,86,42,0.12), transparent 70%),
+    var(--clay-900);
+  overflow: hidden;
+}
+.game__canvas {
+  width: 100%;
+  height: clamp(360px, 56vh, 520px);
+  display: block;
+  touch-action: none;
+}
+
+.game__overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.9rem; text-align: center; padding: 1.5rem;
+  background: rgba(21, 11, 8, 0.66);
+  backdrop-filter: blur(3px);
+}
+.game__overlay h3 { font-size: clamp(1.6rem, 1rem + 3vw, 2.4rem); }
+.game__overlay p { color: var(--bone-dim); max-width: 36ch; }
+.game__overlay .btn { margin-top: 0.5rem; }
+
+@media (max-width: 560px) {
+  .game__scoreboard { gap: 1rem; }
+  .game__score-num { font-size: 2rem; }
+}

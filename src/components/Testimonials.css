@@ -1,0 +1,26 @@
+.press { background: var(--clay-900); }
+
+.marquee { overflow: hidden; border-block: 1px solid var(--line); padding-block: 1.1rem; margin-bottom: clamp(3rem, 7vw, 5rem); }
+.marquee__track { display: flex; gap: 3rem; width: max-content; animation: marquee 28s linear infinite; }
+.marquee__item {
+  font-family: var(--font-mono); font-size: 0.82rem; letter-spacing: 0.22em; color: var(--bone-dim); white-space: nowrap;
+}
+.marquee:hover .marquee__track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+.press__grid {
+  margin-top: 1.75rem;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+}
+.press__card {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: clamp(1.4rem, 3vw, 2rem); display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem;
+  background: var(--clay-850);
+}
+.press__card blockquote { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; line-height: 1.35; letter-spacing: -0.01em; }
+.press__card figcaption { display: flex; flex-direction: column; }
+.press__card figcaption strong { color: var(--bone); }
+.press__card figcaption span { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; color: var(--bone-dim); }
+
+@media (max-width: 880px) { .press__grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .marquee__track { animation: none; } }

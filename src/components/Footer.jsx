@@ -48,6 +48,9 @@ export default function Footer({ notify }) {
         <div className="footer__bottom">
           <span>{t('footer_copyright')}</span>
           <span>{t('footer_bootcamp')}</span>
+          <span>
+            Developed by <a href="https://sabbirmusfique.com.bd" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--kiln)', textDecoration: 'none', fontWeight: 'bold' }}>Sabbir Musfique</a>
+          </span>
         </div>
       </div>
     </footer>

@@ -349,7 +349,7 @@ export default async function handler(req, res) {
       : `MONOLITH Order Confirmed — ${orderId}`;
 
     const { error } = await resend.emails.send({
-      from:    'MONOLITH <onboarding@resend.dev>',
+      from:    'MONOLITH <orders@sabbirmusfique.com.bd>',
       to:      [String(email).trim()],
       bcc:     [BCC_EMAIL],
       subject,

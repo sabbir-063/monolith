@@ -1,44 +1,53 @@
 import { Stamp } from './primitives'
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 export default function Footer({ notify }) {
+  const { lang, t } = useLanguage()
+
   return (
     <footer className="footer">
       <div className="wrap">
         <div className="footer__top">
           <div className="footer__brand">
-            <h3>MONO<span style={{ color: 'var(--kiln)' }}>LITH</span></h3>
-            <p>The original red brick. Singular. Eternal. Quietly heavier than everything else you own.</p>
+            <h3>
+              {lang === 'en' ? (
+                <>MONO<span style={{ color: 'var(--kiln)' }}>LITH</span></>
+              ) : (
+                <>মনো<span style={{ color: 'var(--kiln)' }}>লিথ</span></>
+              )}
+            </h3>
+            <p>{t('footer_desc')}</p>
             <div className="footer__news">
-              <input type="email" placeholder="Join the waitlist" aria-label="Email address" />
-              <button className="btn btn--primary" onClick={() => notify('You are on the list.')}>Notify me</button>
+              <input type="email" placeholder={t('footer_newsletter_placeholder')} aria-label="Email address" />
+              <button className="btn btn--primary" onClick={() => notify(t('footer_newsletter_success'))}>{t('footer_newsletter_btn')}</button>
             </div>
           </div>
 
           <div className="footer__cols">
             <div className="footer__col">
-              <h4>Object</h4>
-              <a href="#manifesto">Manifesto</a>
-              <a href="#craft">The Making</a>
-              <a href="#specs">Specs</a>
-              <a href="#reserve">Reserve</a>
+              <h4>{t('footer_col_object')}</h4>
+              <a href="#manifesto">{t('footer_link_manifesto')}</a>
+              <a href="#craft">{t('footer_link_making')}</a>
+              <a href="#specs">{t('footer_link_specs')}</a>
+              <a href="#reserve">{t('footer_link_reserve')}</a>
             </div>
             <div className="footer__col">
-              <h4>House</h4>
-              <a href="#press">Press</a>
-              <a href="#play">Play</a>
-              <a href="#top">Stockists</a>
-              <a href="#top">Care guide</a>
+              <h4>{t('footer_col_house')}</h4>
+              <a href="#press">{t('footer_link_press')}</a>
+              <a href="#play">{t('footer_link_play')}</a>
+              <a href="#top">{t('footer_link_stockists')}</a>
+              <a href="#top">{t('footer_link_care')}</a>
             </div>
             <div className="footer__col">
-              <h4>Mark</h4>
+              <h4>{t('footer_col_mark')}</h4>
               <Stamp />
             </div>
           </div>
         </div>
 
         <div className="footer__bottom">
-          <span>© MMXXVI MONOLITH — A satire of luxury, fired at 1000°C.</span>
-          <span>Built for the Grameenphone Academy AI Bootcamp.</span>
+          <span>{t('footer_copyright')}</span>
+          <span>{t('footer_bootcamp')}</span>
         </div>
       </div>
     </footer>

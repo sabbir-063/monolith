@@ -1,22 +1,30 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Reveal, Stamp } from './primitives'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import './Configurator.css'
 
 const FINISHES = [
-  { id: 'oxblood', name: 'Classic Oxblood', color: '#9b2d20', price: 24000, note: 'The original. Fired to permanence.' },
-  { id: 'matte', name: 'Matte Obsidian', color: '#241410', price: 31000, note: 'Limited firing. Deeper, quieter.' },
-  { id: 'kiln', name: 'Kiln Orange', color: '#e2562a', price: 38000, note: 'Pulled from the fire at its brightest.' },
+  { id: 'oxblood', color: '#9b2d20', price: 24000 },
+  { id: 'matte', color: '#241410', price: 31000 },
+  { id: 'kiln', color: '#e2562a', price: 38000 },
 ]
 const ENGRAVE_COST = 4000
 
 export default function Configurator({ notify }) {
+  const { lang, t } = useLanguage()
   const [finishId, setFinishId] = useState('oxblood')
   const [engrave, setEngrave] = useState('')
   const [bursts, setBursts] = useState([])
   const btnRef = useRef(null)
 
-  const finish = FINISHES.find((f) => f.id === finishId)
+  const finishesData = FINISHES.map((f) => ({
+    ...f,
+    name: t(`config_finish_${f.id}_name`),
+    note: t(`config_finish_${f.id}_note`),
+  }))
+
+  const finish = finishesData.find((f) => f.id === finishId)
   const total = finish.price + (engrave.trim() ? ENGRAVE_COST : 0)
 
   const reserve = () => {
@@ -29,16 +37,22 @@ export default function Configurator({ notify }) {
     }))
     setBursts((b) => [...b, { id, particles, color: finish.color }])
     setTimeout(() => setBursts((b) => b.filter((x) => x.id !== id)), 900)
-    notify(`Reserved — ${finish.name}${engrave.trim() ? ` · “${engrave.trim()}”` : ''}`)
+    notify(`${t('config_notify_reserved')} — ${finish.name}${engrave.trim() ? ` · “${engrave.trim()}”` : ''}`)
   }
 
   return (
     <section className="config section" id="reserve">
       <div className="wrap config__wrap">
         <Reveal className="config__intro">
-          <span className="eyebrow">Reserve yours</span>
-          <h2>Configure the<br />MONOLITH</h2>
-          <p>Three finishes. One optional mark. A lifetime — or several — of ownership.</p>
+          <span className="eyebrow">{t('config_eyebrow')}</span>
+          <h2>
+            {lang === 'en' ? (
+              <>Configure the<br />MONOLITH</>
+            ) : (
+              <>মনোলিথ<br />কনফিগার করুন</>
+            )}
+          </h2>
+          <p>{t('config_sub')}</p>
           <Stamp className="config__stamp" />
         </Reveal>
 
@@ -52,9 +66,9 @@ export default function Configurator({ notify }) {
           </div>
 
           <div className="config__field">
-            <label>Finish</label>
+            <label>{t('config_finish_label')}</label>
             <div className="config__finishes">
-              {FINISHES.map((f) => (
+              {finishesData.map((f) => (
                 <button
                   key={f.id}
                   className={`config__chip ${f.id === finishId ? 'is-active' : ''}`}
@@ -69,20 +83,20 @@ export default function Configurator({ notify }) {
           </div>
 
           <div className="config__field">
-            <label htmlFor="engrave">Engraving <span>optional · +৳4,000</span></label>
+            <label htmlFor="engrave">{t('config_engrave_label')} <span>{t('config_engrave_sub')}</span></label>
             <input
               id="engrave"
               type="text"
               maxLength={18}
               value={engrave}
               onChange={(e) => setEngrave(e.target.value)}
-              placeholder="e.g. PROPERTY OF NO ONE"
+              placeholder={t('config_engrave_placeholder')}
             />
           </div>
 
           <div className="config__total">
-            <span>Total</span>
-            <strong>৳ {total.toLocaleString()}</strong>
+            <span>{t('config_total_label')}</span>
+            <strong>৳ {total.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US')}</strong>
           </div>
 
           <motion.button
@@ -91,7 +105,7 @@ export default function Configurator({ notify }) {
             onClick={reserve}
             whileTap={{ scale: 0.97 }}
           >
-            Add to cart <span className="btn__arrow">&rarr;</span>
+            {t('config_add_btn')} <span className="btn__arrow">&rarr;</span>
             {bursts.map((burst) => (
               <span className="config__burst" key={burst.id}>
                 {burst.particles.map((p) => (
@@ -108,7 +122,7 @@ export default function Configurator({ notify }) {
               </span>
             ))}
           </motion.button>
-          <p className="config__fine">Ships in a custom timber crate. No assembly. Ever.</p>
+          <p className="config__fine">{t('config_fine')}</p>
         </Reveal>
       </div>
     </section>

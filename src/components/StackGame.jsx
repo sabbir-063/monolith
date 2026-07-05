@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import './StackGame.css'
 
 const BRICK_H = 26
@@ -9,6 +10,7 @@ export default function StackGame() {
   const game = useRef(null)
   const phaseRef = useRef('ready') // 'ready' | 'playing' | 'over'
   const dprRef = useRef(1)
+  const { lang, t } = useLanguage()
 
   const [phase, setPhase] = useState('ready')
   const [score, setScore] = useState(0)
@@ -168,20 +170,20 @@ export default function StackGame() {
       <div className="wrap">
         <div className="game__head">
           <div>
-            <span className="eyebrow">Interlude · A small test of patience</span>
-            <h2>Stack the Monolith</h2>
+            <span className="eyebrow">{t('game_eyebrow')}</span>
+            <h2>{t('game_title')}</h2>
             <p className="game__sub">
-              Tap, click, or press space to drop each brick. Build your legacy as high as it will stand.
+              {t('game_sub')}
             </p>
           </div>
           <div className="game__scoreboard">
             <div className="game__score">
-              <span className="game__score-num">{score}</span>
-              <span className="game__score-label">Height</span>
+              <span className="game__score-num">{score.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US')}</span>
+              <span className="game__score-label">{t('game_score_label')}</span>
             </div>
             <div className="game__score">
-              <span className="game__score-num">{best}</span>
-              <span className="game__score-label">Best</span>
+              <span className="game__score-num">{best.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US')}</span>
+              <span className="game__score-label">{t('game_best_label')}</span>
             </div>
           </div>
         </div>
@@ -193,15 +195,15 @@ export default function StackGame() {
             <div className="game__overlay">
               {phase === 'ready' ? (
                 <>
-                  <h3>Ready to build?</h3>
-                  <p>One tap drops a brick. Miss the edge and the tower falls.</p>
-                  <button className="btn btn--primary" onClick={startGame}>Start building</button>
+                  <h3>{t('game_overlay_ready_title')}</h3>
+                  <p>{t('game_overlay_ready_sub')}</p>
+                  <button className="btn btn--primary" onClick={startGame}>{t('game_overlay_ready_btn')}</button>
                 </>
               ) : (
                 <>
-                  <h3>Tower of {score}</h3>
-                  <p>{verdict(score)}</p>
-                  <button className="btn btn--primary" onClick={startGame}>Build again</button>
+                  <h3>{t('game_overlay_over_title')} {score.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US')}</h3>
+                  <p>{verdict(score, t)}</p>
+                  <button className="btn btn--primary" onClick={startGame}>{t('game_overlay_over_btn')}</button>
                 </>
               )}
             </div>
@@ -239,9 +241,9 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath()
 }
 
-function verdict(n) {
-  if (n >= 18) return 'Architecturally significant. The committee is impressed.'
-  if (n >= 10) return 'A respectable tower. Future generations may visit.'
-  if (n >= 5) return 'A solid start. Rome was not stacked in a day.'
-  return 'Gravity remains undefeated. Try once more.'
+function verdict(n, t) {
+  if (n >= 18) return t('game_verdict_4')
+  if (n >= 10) return t('game_verdict_3')
+  if (n >= 5) return t('game_verdict_2')
+  return t('game_verdict_1')
 }

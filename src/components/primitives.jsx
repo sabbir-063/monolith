@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 /* Reveal — adds .is-in when the element scrolls into view (CSS does the rest). */
 export function Reveal({ children, className = '', style, as: Tag = 'div' }) {
@@ -32,6 +33,7 @@ export function CountUp({ to, decimals = 0, suffix = '', prefix = '', duration =
   const ref = useRef(null)
   const [val, setVal] = useState(0)
   const started = useRef(false)
+  const { lang } = useLanguage()
 
   useEffect(() => {
     const el = ref.current
@@ -61,7 +63,7 @@ export function CountUp({ to, decimals = 0, suffix = '', prefix = '', duration =
   return (
     <span ref={ref}>
       {prefix}
-      {val.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
+      {val.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
       {suffix}
     </span>
   )

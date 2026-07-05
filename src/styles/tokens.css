@@ -45,3 +45,9 @@
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+body.is-bn {
+  --font-display: "Hind Siliguri", "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
+  --font-body: "Noto Sans Bengali", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Noto Sans Bengali", ui-monospace, "SFMono-Regular", monospace;
+}

@@ -2,20 +2,22 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { usePrefersReducedMotion } from '../hooks/useReducedMotion'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import './Manifesto.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const LINES = [
-  ['Some objects', 'beg for your attention.'],
-  ['They blink. They buzz.', 'They ask to be upgraded.'],
-  ['The MONOLITH does none of this.'],
-  ['It simply', 'endures.'],
-]
-
 export default function Manifesto() {
   const sectionRef = useRef(null)
   const reduced = usePrefersReducedMotion()
+  const { lang, t } = useLanguage()
+
+  const linesData = [
+    [t('manifesto_line1_1'), t('manifesto_line1_2')],
+    [t('manifesto_line2_1'), t('manifesto_line2_2')],
+    [t('manifesto_line3_1')],
+    [t('manifesto_line4_1'), t('manifesto_line4_2')],
+  ]
 
   useEffect(() => {
     if (reduced) return
@@ -42,14 +44,14 @@ export default function Manifesto() {
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [reduced])
+  }, [reduced, lang])
 
   return (
     <section className="manifesto" id="manifesto" ref={sectionRef}>
       <div className="manifesto__inner wrap">
-        <span className="eyebrow">The Manifesto</span>
+        <span className="eyebrow">{t('manifesto_eyebrow')}</span>
         <div className="manifesto__lines">
-          {LINES.map((line, i) => (
+          {linesData.map((line, i) => (
             <p className="manifesto__line" key={i}>
               {line.map((part, j) => (
                 <span key={j}>{part}</span>

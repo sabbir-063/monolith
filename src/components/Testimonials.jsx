@@ -1,20 +1,30 @@
 import { Reveal } from './primitives'
+import { useLanguage } from '../context/LanguageContext.jsx'
 import './Testimonials.css'
 
-const PRESS = ['ARCHITECTURAL WEEKLY', 'KILN & CO.', 'THE STILL REVIEW', 'OBJECT QUARTERLY', 'MASONRY TODAY', 'SLOW GOODS']
-
-const QUOTES = [
-  { t: 'It has never once asked me to update it. We have grown old together in silence.', a: 'A. Rahman', r: 'Owner, three years' },
-  { t: 'I placed it on my desk. The room immediately felt more decisive.', a: 'L. Moreau', r: 'Collector' },
-  { t: 'My phone died. My MONOLITH did not even notice.', a: 'S. Haque', r: 'Verified buyer' },
-]
-
 export default function Testimonials() {
+  const { t } = useLanguage()
+
+  const pressData = [
+    t('press_item1'),
+    t('press_item2'),
+    t('press_item3'),
+    t('press_item4'),
+    t('press_item5'),
+    t('press_item6'),
+  ]
+
+  const quotesData = [
+    { t: t('testimonials_q1_text'), a: t('testimonials_q1_author'), r: t('testimonials_q1_role') },
+    { t: t('testimonials_q2_text'), a: t('testimonials_q2_author'), r: t('testimonials_q2_role') },
+    { t: t('testimonials_q3_text'), a: t('testimonials_q3_author'), r: t('testimonials_q3_role') },
+  ]
+
   return (
     <section className="press section" id="press">
       <Reveal className="marquee" aria-label="As seen in">
         <div className="marquee__track">
-          {[...PRESS, ...PRESS].map((p, i) => (
+          {[...pressData, ...pressData].map((p, i) => (
             <span className="marquee__item" key={i}>{p}</span>
           ))}
         </div>
@@ -22,10 +32,10 @@ export default function Testimonials() {
 
       <div className="wrap">
         <Reveal>
-          <span className="eyebrow">Owners speak (quietly)</span>
+          <span className="eyebrow">{t('testimonials_eyebrow')}</span>
         </Reveal>
         <div className="press__grid">
-          {QUOTES.map((q, i) => (
+          {quotesData.map((q, i) => (
             <Reveal as="figure" className="press__card" key={i}>
               <blockquote>“{q.t}”</blockquote>
               <figcaption>

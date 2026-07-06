@@ -15,8 +15,25 @@
   margin-bottom: clamp(3rem, 7vw, 5rem);
 }
 .craft__title { margin-top: 1.2rem; font-size: clamp(2rem, 1rem + 4.5vw, 4rem); }
-.craft__title em { color: var(--brick); font-style: normal; }
+.craft__title em {
+  color: var(--brick); font-style: normal;
+  /* paint swipe — sweeps under the word once its split words have risen */
+  background-image: linear-gradient(rgba(226, 86, 42, 0.2), rgba(226, 86, 42, 0.2));
+  background-repeat: no-repeat;
+  background-position: 0 80%;
+  background-size: 0% 0.28em;
+  transition: background-size 0.9s var(--ease) 0.55s;
+}
+.craft__title em:has(.split.is-in) { background-size: 100% 0.28em; }
 .craft__head-note p { color: var(--ash); font-size: 1.05rem; }
+
+/* the kiln line — scrubbed by scroll across the top of the steps */
+.craft__progress { height: 2px; background: var(--line-dark); border-radius: 2px; margin-bottom: 0.9rem; overflow: hidden; }
+.craft__progress-bar {
+  height: 100%; width: 100%;
+  background: linear-gradient(90deg, var(--brick), var(--kiln));
+  transform: scaleX(0); transform-origin: left center;
+}
 
 .craft__steps {
   list-style: none; padding: 0; margin: 0;
@@ -31,10 +48,22 @@
   background: var(--bone);
   padding: clamp(1.4rem, 3vw, 2rem);
   display: flex; flex-direction: column; gap: 0.6rem;
+  --spot-color: rgba(155, 45, 32, 0.08);
 }
-.craft__no { font-family: var(--font-mono); font-size: 0.78rem; color: var(--brick); letter-spacing: 0.1em; }
+.craft__step:hover { box-shadow: 0 18px 44px rgba(21, 11, 8, 0.14); }
+.craft__no {
+  font-family: var(--font-mono); font-size: 0.78rem; color: var(--brick); letter-spacing: 0.1em;
+  align-self: flex-start; padding: 0.18em 0.55em; margin-left: -0.55em; border-radius: 3px;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+.craft__step:hover .craft__no { background: var(--brick); color: var(--bone); }
 .craft__step h3 { font-size: 1.4rem; }
 .craft__step p { color: var(--ash); font-size: 0.95rem; }
+
+/* internal cascade — number, title, body follow the card in */
+.craft__step.is-in .craft__no { animation: rv-up 0.6s var(--ease) calc(var(--rv-delay, 0ms) + 180ms) backwards; }
+.craft__step.is-in h3        { animation: rv-up 0.6s var(--ease) calc(var(--rv-delay, 0ms) + 270ms) backwards; }
+.craft__step.is-in p         { animation: rv-up 0.6s var(--ease) calc(var(--rv-delay, 0ms) + 360ms) backwards; }
 
 @media (max-width: 880px) {
   .craft__head { grid-template-columns: 1fr; }
@@ -42,4 +71,11 @@
 }
 @media (max-width: 540px) {
   .craft__steps { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .craft__step.is-in .craft__no,
+  .craft__step.is-in h3,
+  .craft__step.is-in p { animation: none; }
+  .craft__progress-bar { transform: none; transition: none; }
+  .craft__title em { background-size: 100% 0.28em; transition: none; }
 }

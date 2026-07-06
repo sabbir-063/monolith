@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
-import { motion } from 'framer-motion'
-import { Reveal, Stamp } from './primitives'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Reveal, Stamp, Ticker } from './primitives'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import OrderModal from './OrderModal.jsx'
 import './Configurator.css'
@@ -21,6 +21,7 @@ export default function Configurator({ notify }) {
   const [bursts,     setBursts]     = useState([])
   const [showModal,  setShowModal]  = useState(false)
   const btnRef = useRef(null)
+  const qtyDir = useRef(1) // 1 = increased, -1 = decreased (drives the roll direction)
 
   const finishesData = FINISHES.map((f) => ({
     ...f,
@@ -34,6 +35,11 @@ export default function Configurator({ notify }) {
   const total        = finish.price * quantity + engraveCost
 
   const fmt = (n) => Number(n).toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US')
+
+  const changeQty = (delta) => {
+    qtyDir.current = delta
+    setQuantity((q) => Math.min(99, Math.max(1, q + delta)))
+  }
 
   const addToCart = useCallback(() => {
     // Particle burst
@@ -54,7 +60,7 @@ export default function Configurator({ notify }) {
     <>
       <section className="config section" id="reserve">
         <div className="wrap config__wrap">
-          <Reveal className="config__intro">
+          <Reveal className="config__intro" variant="left">
             <span className="eyebrow">{t('config_eyebrow')}</span>
             <h2>
               {lang === 'en' ? (
@@ -67,14 +73,49 @@ export default function Configurator({ notify }) {
             <Stamp className="config__stamp" />
           </Reveal>
 
-          <Reveal className="config__panel">
-            {/* Brick preview */}
+          <Reveal className="config__panel" variant="right" delay={150}>
+            {/* Brick preview — flips over when the finish changes */}
             <div className="config__preview" style={{ '--swatch': finish.color }}>
-              <div className="config__brick" />
-              <p className="config__note">{finish.note}</p>
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div
+                  key={finish.id}
+                  className="config__brick"
+                  initial={{ rotateX: -95, opacity: 0, y: -14 }}
+                  animate={{ rotateX: 0, opacity: 1, y: 0 }}
+                  exit={{ rotateX: 95, opacity: 0, y: 14 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {/* live engraving preview */}
+                  <AnimatePresence>
+                    {hasEngrave && (
+                      <motion.span
+                        className="config__engraving"
+                        initial={{ opacity: 0, scale: 0.85 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.85 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        {engrave.trim().toUpperCase()}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.p
+                  key={finish.id}
+                  className="config__note"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  {finish.note}
+                </motion.p>
+              </AnimatePresence>
             </div>
 
-            {/* Finish selector */}
+            {/* Finish selector — active pill slides between chips */}
             <div className="config__field">
               <label>{t('config_finish_label')}</label>
               <div className="config__finishes">
@@ -85,6 +126,13 @@ export default function Configurator({ notify }) {
                     onClick={() => setFinishId(f.id)}
                     aria-pressed={f.id === finishId}
                   >
+                    {f.id === finishId && (
+                      <motion.span
+                        className="config__chip-pill"
+                        layoutId="chip-pill"
+                        transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                      />
+                    )}
                     <span className="config__dot" style={{ background: f.color }} />
                     {f.name}
                   </button>
@@ -92,22 +140,33 @@ export default function Configurator({ notify }) {
               </div>
             </div>
 
-            {/* Quantity picker */}
+            {/* Quantity picker — value rolls up/down */}
             <div className="config__field">
               <label>{t('config_qty_label')}</label>
               <div className="config__qty">
                 <button
                   className="config__qty-btn"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  onClick={() => changeQty(-1)}
                   disabled={quantity <= 1}
                   aria-label="Decrease quantity"
                 >−</button>
                 <span className="config__qty-val">
-                  {fmt(quantity)}
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                      key={quantity}
+                      initial={{ y: qtyDir.current > 0 ? 16 : -16, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: qtyDir.current > 0 ? -16 : 16, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                      style={{ display: 'inline-block' }}
+                    >
+                      {fmt(quantity)}
+                    </motion.span>
+                  </AnimatePresence>
                 </span>
                 <button
                   className="config__qty-btn"
-                  onClick={() => setQuantity((q) => Math.min(99, q + 1))}
+                  onClick={() => changeQty(1)}
                   disabled={quantity >= 99}
                   aria-label="Increase quantity"
                 >+</button>
@@ -129,10 +188,10 @@ export default function Configurator({ notify }) {
               />
             </div>
 
-            {/* Total */}
+            {/* Total — rolls to the new amount instead of jumping */}
             <div className="config__total">
               <span>{t('config_total_label')}</span>
-              <strong>৳ {fmt(total)}</strong>
+              <strong>৳ <Ticker value={total} format={fmt} /></strong>
             </div>
 
             {/* CTA */}

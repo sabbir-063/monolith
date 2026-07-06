@@ -146,6 +146,8 @@ export const translations = {
     footer_link_care: "Care guide",
     footer_copyright: "© MMXXVI MONOLITH — A satire of luxury, fired at 1000°C.",
     footer_bootcamp: "Built for the Grameenphone Academy AI Bootcamp.",
+    footer_developed_by: "Developed by",
+    footer_developer_name: "Sabbir Musfique",
 
     // Testimonials
     testimonials_eyebrow: "Owners speak (quietly)",
@@ -314,6 +316,8 @@ export const translations = {
     footer_link_care: "রক্ষণাবেক্ষণ গাইড",
     footer_copyright: "© MMXXVI মনোলিথ — লাক্সারির একটি বিদ্রূপাত্মক রূপ, ১০০০° সে. তাপমাত্রায় দগ্ধ।",
     footer_bootcamp: "গ্রামীণফোন একাডেমি এআই বুটক্যাম্পের জন্য নির্মিত।",
+    footer_developed_by: "ডেভেলপ করেছেন",
+    footer_developer_name: "সাব্বির মুশফিক",
 
     // Testimonials
     testimonials_eyebrow: "মালিকদের বক্তব্য (মৃদু স্বরে)",

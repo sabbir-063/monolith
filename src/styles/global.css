@@ -67,8 +67,19 @@ h3 { font-size: var(--fs-h3); }
   border-radius: var(--radius);
   transition: transform 0.2s var(--ease), background 0.2s var(--ease), color 0.2s var(--ease);
 }
-.btn--primary { background: var(--kiln); color: var(--clay-900); font-weight: 700; }
+.btn--primary { background: var(--kiln); color: var(--clay-900); font-weight: 700; position: relative; overflow: hidden; }
 .btn--primary:hover { background: var(--kiln-soft); transform: translateY(-2px); }
+/* shine sweep */
+.btn--primary::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: -45%;
+  width: 38%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.65s var(--ease);
+  pointer-events: none;
+}
+.btn--primary:hover::before { left: 125%; }
 .btn--ghost { border: 1px solid var(--line); color: var(--bone); }
 .btn--ghost:hover { border-color: var(--kiln); color: var(--kiln); }
 .btn__arrow { transition: transform 0.2s var(--ease); }
@@ -76,9 +87,106 @@ h3 { font-size: var(--fs-h3); }
 
 /* ============================================================
    Reveal on scroll (CSS + IntersectionObserver)
+   Uses keyframes with `backwards` fill (not transitions) so hover
+   transforms on the same element stay snappy after the entrance.
    ============================================================ */
-.reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
-.reveal.is-in { opacity: 1; transform: none; }
+.reveal { opacity: 0; }
+.reveal.is-in {
+  opacity: 1;
+  animation: rv-up 0.85s var(--ease) var(--rv-delay, 0ms) backwards;
+}
+.reveal--clip.is-in  { animation-name: rv-clip; }
+.reveal--blur.is-in  { animation-name: rv-blur; }
+.reveal--left.is-in  { animation-name: rv-left; }
+.reveal--right.is-in { animation-name: rv-right; }
+.reveal--scale.is-in { animation-name: rv-scale; }
+.reveal--deal.is-in  { animation-name: rv-deal; }
+
+@keyframes rv-up    { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes rv-clip  { from { opacity: 0; transform: translateY(18px); clip-path: inset(80% 0 0 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); } }
+@keyframes rv-blur  { from { opacity: 0; filter: blur(14px); transform: scale(0.97); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes rv-left  { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+@keyframes rv-right { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+@keyframes rv-scale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
+@keyframes rv-deal  { from { opacity: 0; transform: translateY(40px) rotate(var(--deal, -2.5deg)); } to { opacity: 1; transform: none; } }
+
+/* ============================================================
+   Split text — words rise out of a clip mask with stagger
+   ============================================================ */
+/* padding/negative-margin gives Bangla descenders room inside the clip */
+.split__mask { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+.split__word {
+  display: inline-block;
+  transform: translateY(115%);
+  transition: transform 0.9s var(--ease);
+  will-change: transform;
+}
+.split.is-in .split__word { transform: none; }
+
+/* Characters (mount-animated — hero title) */
+.chars__mask { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+.chars__c {
+  display: inline-block;
+  transform: translateY(112%);
+  animation: chars-in 0.9s var(--ease) both;
+  will-change: transform;
+}
+@keyframes chars-in { to { transform: none; } }
+
+/* ============================================================
+   Card FX — cursor tilt (.fx-card) + kiln spotlight (.spot)
+   ============================================================ */
+.fx-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --lift: 0px;
+  position: relative;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift));
+  transition: transform 0.25s var(--ease), box-shadow 0.3s var(--ease);
+}
+.fx-card:hover { --lift: -4px; z-index: 1; }
+.reveal.fx-card.is-in { transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift)); }
+
+.spot { position: relative; overflow: hidden; }
+.spot::after {
+  content: "";
+  position: absolute; inset: 0;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease);
+  pointer-events: none;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), var(--spot-color, rgba(226, 86, 42, 0.14)), transparent 70%);
+}
+.spot:hover::after { opacity: 1; }
+
+/* ============================================================
+   Embers — drifting kiln sparks (decorative)
+   ============================================================ */
+.embers { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.embers__p {
+  position: absolute;
+  bottom: -12px;
+  border-radius: 50%;
+  background: var(--kiln-soft);
+  box-shadow: 0 0 8px 1px rgba(240, 138, 75, 0.55);
+  opacity: 0;
+  animation: ember-rise var(--dur, 12s) linear var(--delay, 0s) infinite;
+}
+@keyframes ember-rise {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0; }
+  8%   { opacity: var(--o, 0.4); }
+  70%  { opacity: var(--o, 0.4); }
+  100% { transform: translate3d(var(--drift, 0px), -108vh, 0) scale(0.4); opacity: 0; }
+}
+
+/* CountUp settle pop + Ticker */
+.countup { display: inline-block; }
+.countup.is-done { animation: num-pop 0.5s var(--ease); }
+@keyframes num-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.09); color: var(--kiln-soft); }
+  100% { transform: scale(1); }
+}
+.ticker { display: inline-block; font-variant-numeric: tabular-nums; }
 
 /* ============================================================
    Maker's stamp (the brick "frog" mark)
@@ -107,7 +215,13 @@ h3 { font-size: var(--fs-h3); }
 .masonry { display: flex; flex-direction: column; gap: 4px; padding-block: 2px; overflow: hidden; opacity: 0.5; }
 .masonry__row { display: flex; gap: 4px; }
 .masonry__row:nth-child(even) { margin-left: -28px; }
-.masonry__brick { height: 12px; width: 56px; border-radius: 2px; background: var(--line); flex: none; }
+.masonry__brick {
+  height: 12px; width: 56px; border-radius: 2px; background: var(--line); flex: none;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s var(--ease) var(--d, 0ms);
+}
+.masonry.is-in .masonry__brick { transform: none; }
 
 /* ============================================================
    Nav
@@ -128,10 +242,15 @@ h3 { font-size: var(--fs-h3); }
 .nav__brand span { color: var(--kiln); }
 .nav__links { display: flex; align-items: center; gap: 1.75rem; }
 .nav__link {
+  position: relative;
   font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--bone-dim); transition: color 0.2s var(--ease);
 }
-.nav__link:hover { color: var(--bone); }
+.nav__link:hover, .nav__link.is-active { color: var(--bone); }
+.nav__underline {
+  position: absolute; left: 0; right: 0; bottom: -7px;
+  height: 1px; background: var(--kiln);
+}
 .nav__cta { padding: 0.65em 1.2em; font-size: 0.72rem; }
 @media (max-width: 720px) {
   .nav__links .nav__link { display: none; }
@@ -154,6 +273,15 @@ h3 { font-size: var(--fs-h3); }
 .footer__col h4 { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--kiln); margin-bottom: 0.9rem; }
 .footer__col a { display: block; color: var(--bone-dim); padding: 0.25rem 0; transition: color 0.2s var(--ease); }
 .footer__col a:hover { color: var(--bone); }
+.footer__col a { transition: color 0.2s var(--ease), transform 0.25s var(--ease); }
+.footer__col a:hover { transform: translateX(4px); }
+.footer__word { display: inline-block; white-space: nowrap; }
+.footer__letter {
+  display: inline-block;
+  transition: transform 0.3s var(--ease), color 0.3s var(--ease);
+  transition-delay: calc(var(--i) * 18ms);
+}
+.footer__brand h3:hover .footer__letter { transform: translateY(-6px); }
 .footer__bottom {
   margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
   display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between;
@@ -176,6 +304,16 @@ h3 { font-size: var(--fs-h3); }
    Reduced motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .reveal, .reveal.is-in { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .split__word, .chars__c { transform: none !important; transition: none !important; animation: none !important; }
+  .masonry__brick { transform: none !important; transition: none !important; }
+  .embers__p { animation: none !important; opacity: 0 !important; }
+  .fx-card { transform: none !important; }
+  .spot::after { display: none !important; }
+  .btn--primary::before { display: none !important; }
+  .countup.is-done { animation: none !important; }
+  .footer__letter { transition: none !important; transform: none !important; }
+  .footer__col a { transform: none !important; }
+  .nav__underline { display: none; }
   * { scroll-behavior: auto !important; }
 }

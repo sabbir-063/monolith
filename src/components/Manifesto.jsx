@@ -25,11 +25,12 @@ export default function Manifesto() {
       const lines = gsap.utils.toArray('.manifesto__line')
       gsap.set(lines, { opacity: 0.14 })
 
+      const scrollLength = lines.length * 320
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=' + lines.length * 320,
+          end: '+=' + scrollLength,
           pin: true,
           scrub: 0.6,
         },
@@ -41,6 +42,28 @@ export default function Manifesto() {
       })
       // keep the last line lit
       tl.to(lines[lines.length - 1], { opacity: 1, duration: 1 }, '>-0.4')
+
+      // background mark slowly turns and the kiln warmth builds as you read
+      gsap.fromTo(
+        '.manifesto__mark',
+        { rotate: -10, scale: 0.92, yPercent: 6 },
+        {
+          rotate: 8,
+          scale: 1.08,
+          yPercent: -6,
+          ease: 'none',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: '+=' + scrollLength, scrub: 0.6 },
+        },
+      )
+      gsap.fromTo(
+        '.manifesto__glow',
+        { opacity: 0 },
+        {
+          opacity: 1,
+          ease: 'none',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: '+=' + scrollLength, scrub: 0.6 },
+        },
+      )
     }, sectionRef)
 
     return () => ctx.revert()
@@ -48,6 +71,8 @@ export default function Manifesto() {
 
   return (
     <section className="manifesto" id="manifesto" ref={sectionRef}>
+      <span className="manifesto__mark" aria-hidden="true">M</span>
+      <div className="manifesto__glow" aria-hidden="true" />
       <div className="manifesto__inner wrap">
         <span className="eyebrow">{t('manifesto_eyebrow')}</span>
         <div className="manifesto__lines">

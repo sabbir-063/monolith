@@ -1,5 +1,19 @@
-import { Stamp } from './primitives'
+import { Stamp, Reveal, segmentGraphemes } from './primitives'
 import { useLanguage } from '../context/LanguageContext.jsx'
+
+/* Letters lift one by one as you sweep the cursor across the wordmark.
+   Grapheme segmentation keeps Bangla vowel signs attached to their consonants. */
+function HoverWord({ text, color }) {
+  return (
+    <span className="footer__word" style={color ? { color } : undefined}>
+      {segmentGraphemes(text).map((c, i) => (
+        <span className="footer__letter" key={i} style={{ '--i': i }}>
+          {c}
+        </span>
+      ))}
+    </span>
+  )
+}
 
 export default function Footer({ notify }) {
   const { lang, t } = useLanguage()
@@ -8,12 +22,18 @@ export default function Footer({ notify }) {
     <footer className="footer">
       <div className="wrap">
         <div className="footer__top">
-          <div className="footer__brand">
+          <Reveal className="footer__brand" variant="left">
             <h3>
               {lang === 'en' ? (
-                <>MONO<span style={{ color: 'var(--kiln)' }}>LITH</span></>
+                <>
+                  <HoverWord text="MONO" />
+                  <HoverWord text="LITH" color="var(--kiln)" />
+                </>
               ) : (
-                <>মনো<span style={{ color: 'var(--kiln)' }}>লিথ</span></>
+                <>
+                  <HoverWord text="মনো" />
+                  <HoverWord text="লিথ" color="var(--kiln)" />
+                </>
               )}
             </h3>
             <p>{t('footer_desc')}</p>
@@ -21,37 +41,37 @@ export default function Footer({ notify }) {
               <input type="email" placeholder={t('footer_newsletter_placeholder')} aria-label="Email address" />
               <button className="btn btn--primary" onClick={() => notify(t('footer_newsletter_success'))}>{t('footer_newsletter_btn')}</button>
             </div>
-          </div>
+          </Reveal>
 
           <div className="footer__cols">
-            <div className="footer__col">
+            <Reveal className="footer__col" delay={120}>
               <h4>{t('footer_col_object')}</h4>
               <a href="#manifesto">{t('footer_link_manifesto')}</a>
               <a href="#craft">{t('footer_link_making')}</a>
               <a href="#specs">{t('footer_link_specs')}</a>
               <a href="#reserve">{t('footer_link_reserve')}</a>
-            </div>
-            <div className="footer__col">
+            </Reveal>
+            <Reveal className="footer__col" delay={240}>
               <h4>{t('footer_col_house')}</h4>
               <a href="#press">{t('footer_link_press')}</a>
               <a href="#play">{t('footer_link_play')}</a>
               <a href="#top">{t('footer_link_stockists')}</a>
               <a href="#top">{t('footer_link_care')}</a>
-            </div>
-            <div className="footer__col">
+            </Reveal>
+            <Reveal className="footer__col" delay={360}>
               <h4>{t('footer_col_mark')}</h4>
               <Stamp />
-            </div>
+            </Reveal>
           </div>
         </div>
 
-        <div className="footer__bottom">
+        <Reveal className="footer__bottom" delay={200}>
           <span>{t('footer_copyright')}</span>
           <span>{t('footer_bootcamp')}</span>
           <span>
-            Developed by <a href="https://sabbirmusfique.com.bd" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--kiln)', textDecoration: 'none', fontWeight: 'bold' }}>Sabbir Musfique</a>
+            {t('footer_developed_by')} <a href="https://sabbirmusfique.com.bd" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--kiln)', textDecoration: 'none', fontWeight: 'bold' }}>{t('footer_developer_name')}</a>
           </span>
-        </div>
+        </Reveal>
       </div>
     </footer>
   )

@@ -1,9 +1,10 @@
-import { Reveal } from './primitives'
+import { Reveal, useCardFx } from './primitives'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import './Testimonials.css'
 
 export default function Testimonials() {
   const { t } = useLanguage()
+  const fx = useCardFx(5)
 
   const pressData = [
     t('press_item1'),
@@ -28,6 +29,11 @@ export default function Testimonials() {
             <span className="marquee__item" key={i}>{p}</span>
           ))}
         </div>
+        <div className="marquee__track marquee__track--rev" aria-hidden="true">
+          {[...pressData, ...pressData].reverse().map((p, i) => (
+            <span className="marquee__item" key={i}>{p}</span>
+          ))}
+        </div>
       </Reveal>
 
       <div className="wrap">
@@ -36,7 +42,16 @@ export default function Testimonials() {
         </Reveal>
         <div className="press__grid">
           {quotesData.map((q, i) => (
-            <Reveal as="figure" className="press__card" key={i}>
+            <Reveal
+              as="figure"
+              className="press__card fx-card spot"
+              variant="deal"
+              delay={i * 140}
+              style={{ '--deal': `${i % 2 ? 2.5 : -2.5}deg` }}
+              key={i}
+              {...fx}
+            >
+              <span className="press__mark" aria-hidden="true">”</span>
               <blockquote>“{q.t}”</blockquote>
               <figcaption>
                 <strong>{q.a}</strong>

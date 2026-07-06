@@ -2,6 +2,7 @@
 
 .marquee { overflow: hidden; border-block: 1px solid var(--line); padding-block: 1.1rem; margin-bottom: clamp(3rem, 7vw, 5rem); }
 .marquee__track { display: flex; gap: 3rem; width: max-content; animation: marquee 28s linear infinite; }
+.marquee__track--rev { animation-direction: reverse; animation-duration: 36s; margin-top: 1rem; opacity: 0.45; }
 .marquee__item {
   font-family: var(--font-mono); font-size: 0.82rem; letter-spacing: 0.22em; color: var(--bone-dim); white-space: nowrap;
 }
@@ -16,11 +17,28 @@
   border: 1px solid var(--line); border-radius: var(--radius);
   padding: clamp(1.4rem, 3vw, 2rem); display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem;
   background: var(--clay-850);
+  --spot-color: rgba(226, 86, 42, 0.1);
 }
+.press__card:hover { border-color: rgba(226, 86, 42, 0.35); }
+.press__mark {
+  position: absolute; top: 0.2rem; right: 1rem;
+  font-family: var(--font-display); font-size: 5rem; line-height: 1;
+  color: rgba(226, 86, 42, 0.16);
+  pointer-events: none;
+  transform: scale(0);
+  transform-origin: top right;
+  transition: transform 0.7s var(--ease) calc(var(--rv-delay, 0ms) + 300ms), color 0.3s var(--ease);
+}
+.press__card.is-in .press__mark { transform: scale(1); }
+.press__card:hover .press__mark { color: rgba(226, 86, 42, 0.35); }
 .press__card blockquote { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; line-height: 1.35; letter-spacing: -0.01em; }
 .press__card figcaption { display: flex; flex-direction: column; }
 .press__card figcaption strong { color: var(--bone); }
 .press__card figcaption span { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; color: var(--bone-dim); }
 
 @media (max-width: 880px) { .press__grid { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { .marquee__track { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
+  .marquee__track--rev { display: none; }
+  .press__mark { transform: none; transition: none; }
+}

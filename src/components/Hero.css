@@ -9,7 +9,7 @@
   background: var(--clay-900);
 }
 
-/* warm radial glow behind the brick — the kiln */
+/* warm radial glow behind the brick — the kiln, slowly breathing */
 .hero__bg {
   position: absolute;
   inset: 0;
@@ -17,6 +17,11 @@
     radial-gradient(60% 55% at 72% 42%, rgba(226, 86, 42, 0.18), transparent 60%),
     radial-gradient(40% 40% at 20% 90%, rgba(155, 45, 32, 0.16), transparent 65%);
   pointer-events: none;
+  animation: hero-heat 7s ease-in-out infinite alternate;
+}
+@keyframes hero-heat {
+  from { opacity: 0.75; transform: scale(1); }
+  to   { opacity: 1;    transform: scale(1.05); }
 }
 
 .hero__grid {
@@ -31,12 +36,23 @@
 .hero__copy { max-width: 36rem; }
 
 .hero__title {
-  font-size: var(--fs-display);
+  /* English wordmark runs wider than the Bangla one — size it down so both sit alike */
+  font-size: clamp(2.6rem, 1.2rem + 7vw, 7rem);
   font-weight: 800;
   letter-spacing: -0.04em;
   margin: 1.1rem 0 1.4rem;
+  /* the split chars are inline-blocks, which can wrap mid-word — keep the wordmark on one line */
+  white-space: nowrap;
 }
-.hero__title span { color: var(--kiln); }
+body.is-bn .hero__title { font-size: var(--fs-display); }
+.hero__title-glow { color: var(--kiln); display: inline-block; animation: kiln-flicker 1.8s ease 1.3s 1; }
+@keyframes kiln-flicker {
+  0%, 100% { text-shadow: none; }
+  15% { text-shadow: 0 0 26px rgba(226, 86, 42, 0.55); }
+  25% { text-shadow: 0 0 10px rgba(226, 86, 42, 0.15); }
+  40% { text-shadow: 0 0 34px rgba(226, 86, 42, 0.7); }
+  70% { text-shadow: 0 0 16px rgba(226, 86, 42, 0.3); }
+}
 
 .hero__lede {
   font-size: clamp(1.05rem, 0.98rem + 0.5vw, 1.3rem);
@@ -103,4 +119,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .hero__scroll-line { animation: none; }
+  .hero__bg { animation: none; }
+  .hero__title-glow { animation: none; }
 }

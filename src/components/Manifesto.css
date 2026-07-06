@@ -4,8 +4,34 @@
   display: flex;
   align-items: center;
   border-block: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
 }
-.manifesto__inner { width: 100%; }
+.manifesto__inner { width: 100%; position: relative; }
+
+/* giant watermark "M" — slowly turns during the pinned read */
+.manifesto__mark {
+  position: absolute;
+  right: -6vw; top: 50%;
+  translate: 0 -50%;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(20rem, 46vw, 44rem);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(226, 86, 42, 0.1);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* kiln warmth that builds as the lines light up */
+.manifesto__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70% 60% at 30% 60%, rgba(226, 86, 42, 0.09), transparent 65%);
+  pointer-events: none;
+  opacity: 0;
+}
 .manifesto__lines { margin-top: 2.5rem; display: flex; flex-direction: column; gap: clamp(1rem, 3vw, 2rem); }
 .manifesto__line {
   font-family: var(--font-display);
@@ -21,4 +47,6 @@
 @media (prefers-reduced-motion: reduce) {
   .manifesto { min-height: auto; padding-block: clamp(4rem, 10vw, 8rem); }
   .manifesto__line { opacity: 1 !important; }
+  .manifesto__mark { display: none; }
+  .manifesto__glow { opacity: 1; }
 }

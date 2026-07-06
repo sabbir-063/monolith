@@ -16,12 +16,19 @@
   background: radial-gradient(60% 80% at 50% 30%, rgba(226,86,42,0.16), transparent 70%), var(--clay-850);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
   border: 1px solid var(--line);
+  perspective: 650px; /* gives the finish-change flip its depth */
 }
 .config__brick {
   width: 150px; height: 56px; border-radius: 4px;
   background: var(--swatch);
   box-shadow: inset 0 -6px 12px rgba(0,0,0,0.35), inset 0 4px 8px rgba(255,255,255,0.08), 0 16px 30px rgba(0,0,0,0.4);
-  transition: background 0.4s var(--ease);
+  display: grid; place-items: center;
+}
+.config__engraving {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.22em;
+  color: rgba(236, 228, 214, 0.75);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  max-width: 130px; overflow: hidden; white-space: nowrap;
 }
 .config__note { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; color: var(--bone-dim); }
 
@@ -33,13 +40,22 @@
 
 .config__finishes { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 .config__chip {
+  position: relative;
   display: inline-flex; align-items: center; gap: 0.5em;
   border: 1px solid var(--line); border-radius: 999px; padding: 0.55em 0.95em;
-  font-size: 0.86rem; color: var(--bone-dim); transition: all 0.2s var(--ease);
+  font-size: 0.86rem; color: var(--bone-dim); transition: border-color 0.2s var(--ease), color 0.2s var(--ease);
 }
 .config__chip:hover { border-color: var(--bone-dim); color: var(--bone); }
-.config__chip.is-active { border-color: var(--kiln); color: var(--bone); background: rgba(226,86,42,0.1); }
-.config__dot { width: 14px; height: 14px; border-radius: 3px; }
+.config__chip.is-active { border-color: var(--kiln); color: var(--bone); }
+.config__chip-pill {
+  position: absolute; inset: 0;
+  border-radius: 999px;
+  background: rgba(226, 86, 42, 0.12);
+  pointer-events: none;
+}
+.config__chip > * { position: relative; }
+.config__chip > .config__chip-pill { position: absolute; }
+.config__dot { width: 14px; height: 14px; border-radius: 3px; flex: none; }
 
 .config__field input {
   background: transparent; border: 1px solid var(--line); border-radius: var(--radius);
@@ -56,6 +72,8 @@
 .config__total strong { font-family: var(--font-display); font-weight: 800; font-size: 1.8rem; }
 
 .config__add { position: relative; justify-content: center; overflow: visible; }
+.config__add::before { display: none; } /* shine sweep needs overflow:hidden; this button stays open for the burst */
+.config__qty-val { overflow: hidden; }
 .config__fine { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; color: var(--bone-dim); text-align: center; }
 
 /* quantity picker */

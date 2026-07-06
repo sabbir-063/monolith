@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
 const LINKS = [
@@ -11,6 +11,7 @@ const LINKS = [
 export default function Nav({ onNavigate }) {
   const [scrolled, setScrolled] = useState(false)
   const [active, setActive] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
   const { lang, setLang, t } = useLanguage()
 
   useEffect(() => {
@@ -39,6 +40,7 @@ export default function Nav({ onNavigate }) {
 
   const go = (sel) => (e) => {
     e.preventDefault()
+    setMenuOpen(false)
     onNavigate(sel)
   }
 
@@ -106,6 +108,48 @@ export default function Nav({ onNavigate }) {
           {lang === 'en' ? 'বাং' : 'EN'}
         </motion.button>
       </div>
+      <button
+        className={`nav__burger ${menuOpen ? 'is-open' : ''}`}
+        onClick={() => setMenuOpen((o) => !o)}
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={menuOpen}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            className="nav__mobile"
+            initial={{ opacity: 0, y: -14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -14 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            {LINKS.map((l) => (
+              <a
+                key={l.id}
+                href={`#${l.id}`}
+                className={`nav__mobile-link ${active === l.id ? 'is-active' : ''}`}
+                onClick={go(`#${l.id}`)}
+              >
+                {t(l.key)}
+              </a>
+            ))}
+            <a href="#reserve" className="btn btn--primary nav__mobile-cta" onClick={go('#reserve')}>
+              {t('nav_reserve')}
+            </a>
+            <button
+              className="nav__mobile-link nav__mobile-lang"
+              onClick={toggleLang}
+              aria-label={lang === 'en' ? 'বাংলায় দেখুন' : 'Switch to English'}
+            >
+              {lang === 'en' ? 'বাংলা' : 'English'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   )
 }

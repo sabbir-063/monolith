@@ -24,16 +24,29 @@
   to   { opacity: 1;    transform: scale(1.05); }
 }
 
+/* full-bleed 3D layer — the cinematic (chip flight, halo, sparks) plays
+   across the entire hero; CameraRig keeps the brick over .hero__stage */
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.hero__canvas canvas { cursor: grab; }
+.hero__canvas canvas:active { cursor: grabbing; }
+
 .hero__grid {
   position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   align-items: center;
   gap: clamp(1rem, 4vw, 3rem);
   flex: 1;
+  /* let drags fall through to the canvas below, except on the copy */
+  pointer-events: none;
 }
 
-.hero__copy { max-width: 36rem; }
+.hero__copy { max-width: 36rem; pointer-events: auto; }
 
 .hero__title {
   /* English wordmark runs wider than the Bangla one — size it down so both sit alike */
@@ -71,17 +84,17 @@ body.is-bn .hero__title { font-size: var(--fs-display); }
 .hero__price { font-family: var(--font-mono); font-size: 0.85rem; color: var(--bone-dim); letter-spacing: 0.05em; }
 .hero__price strong { color: var(--bone); font-weight: 700; }
 
+/* invisible layout anchor — reserves the brick's spot in the grid and
+   tells the full-bleed camera where to frame it */
 .hero__stage {
   position: relative;
   height: clamp(320px, 46vh, 540px);
 }
-.hero__stage canvas { cursor: grab; }
-.hero__stage canvas:active { cursor: grabbing; }
 /* smart-stats HUD floating around the super brick */
 .brick-hud-wrap { pointer-events: none !important; }
 .brick-hud {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -128,6 +141,7 @@ body.is-bn .hero__title { font-size: var(--fs-display); }
 
 .hero__foot {
   position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;

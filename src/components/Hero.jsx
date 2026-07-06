@@ -12,6 +12,8 @@ gsap.registerPlugin(ScrollTrigger)
 export default function Hero({ onReserve, reduced }) {
   const { lang, t } = useLanguage()
   const heroRef = useRef(null)
+  // invisible layout rect the full-bleed canvas aims its camera at
+  const stageAnchorRef = useRef(null)
 
   // Parallax exit — the copy drifts up slightly as you scroll into the
   // manifesto. The brick stage is left alone so it stays fully visible.
@@ -32,6 +34,21 @@ export default function Hero({ onReserve, reduced }) {
     <header className="hero" id="top" ref={heroRef}>
       <div className="hero__bg" aria-hidden="true" />
       {!reduced && <Embers count={16} />}
+
+      {/* full-bleed brick stage — the cinematic plays across the whole hero,
+          but the camera keeps the brick anchored over .hero__stage below */}
+      <motion.div
+        className="hero__canvas"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <Brick3D
+          reduced={reduced}
+          anchorRef={stageAnchorRef}
+          labels={[t('hero_hud_humidity'), t('hero_hud_thermal'), t('hero_hud_air')]}
+        />
+      </motion.div>
 
       <div className="hero__grid wrap">
         <div className="hero__copy">
@@ -86,18 +103,9 @@ export default function Hero({ onReserve, reduced }) {
           </motion.div>
         </div>
 
-        <motion.div
-          className="hero__stage"
-          initial={{ opacity: 0, scale: 0.94 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <Brick3D
-            reduced={reduced}
-            labels={[t('hero_hud_humidity'), t('hero_hud_thermal'), t('hero_hud_air')]}
-          />
+        <div className="hero__stage" ref={stageAnchorRef} aria-hidden="true">
           <p className="hero__drag">{t('hero_drag')}</p>
-        </motion.div>
+        </div>
       </div>
 
       <motion.div

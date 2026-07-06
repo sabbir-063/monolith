@@ -57,6 +57,32 @@ function makeCircuitTexture(w = 512, h = 192, traces = 16) {
 }
 
 /* ------------------------------------------------------------------
+   CameraRig — the canvas fills the whole hero, but the brick must sit
+   where the (invisible) .hero__stage rect is. A view offset shifts the
+   projection there and camera.zoom keeps the brick at its stage size.
+   ------------------------------------------------------------------ */
+
+function CameraRig({ anchorRef }) {
+  const { camera, size, gl } = useThree()
+
+  useEffect(() => {
+    const el = anchorRef?.current
+    const cv = gl.domElement.getBoundingClientRect()
+    if (!el || cv.width === 0 || cv.height === 0) return
+    const st = el.getBoundingClientRect()
+    const cx = st.left + st.width / 2 - cv.left
+    const cy = st.top + st.height / 2 - cv.top
+    camera.zoom = Math.min(1, (st.height / cv.height) * 1.05)
+    camera.setViewOffset(cv.width, cv.height, 0.5 * cv.width - cx, 0.5 * cv.height - cy, cv.width, cv.height)
+    camera.updateProjectionMatrix()
+  }, [anchorRef, camera, gl, size])
+
+  useEffect(() => () => camera.clearViewOffset(), [camera])
+
+  return null
+}
+
+/* ------------------------------------------------------------------
    Scene — dormant brick, chip fly-in, lid opening, power-on, super idle
    ------------------------------------------------------------------ */
 
@@ -68,7 +94,7 @@ const HUD_POS = [
 ]
 
 function SmartBrickScene({ reduced, labels }) {
-  const { camera } = useThree()
+  const { camera, gl } = useThree()
   const [done, setDone] = useState(false)
   const doneRef = useRef(false)
   const tlRef = useRef(null)
@@ -124,6 +150,13 @@ function SmartBrickScene({ reduced, labels }) {
     }),
     [tex],
   )
+
+  // the canvas now covers the whole hero — allow one-finger vertical page
+  // scrolling to pass through; horizontal drags still rotate the brick.
+  // (OrbitControls sets touch-action to none; runs after it mounts.)
+  useEffect(() => {
+    gl.domElement.style.touchAction = 'pan-y'
+  }, [gl, done])
 
   const sparkPositions = useMemo(() => {
     const pts = []
@@ -301,7 +334,7 @@ function SmartBrickScene({ reduced, labels }) {
 
       {/* smart-stats HUD — fades in once the brick powers on */}
       {labels.map((label, i) => (
-        <Html key={i} position={HUD_POS[i]} center distanceFactor={9} zIndexRange={[40, 0]} wrapperClass="brick-hud-wrap">
+        <Html key={i} position={HUD_POS[i]} center zIndexRange={[40, 0]} wrapperClass="brick-hud-wrap">
           <div className={`brick-hud ${done ? 'is-on' : ''}`} style={{ transitionDelay: `${0.25 + i * 0.2}s` }}>
             {label}
           </div>
@@ -321,13 +354,14 @@ function SmartBrickScene({ reduced, labels }) {
   )
 }
 
-export default function Brick3D({ reduced = false, labels = [] }) {
+export default function Brick3D({ reduced = false, labels = [], anchorRef = null }) {
   return (
     <Canvas
       dpr={[1, 2]}
       gl={{ alpha: true, antialias: true }}
       camera={{ position: [3.75, 2.15, 4.95], fov: 32 }}
     >
+      <CameraRig anchorRef={anchorRef} />
       <ambientLight intensity={0.7} />
       {/* key + fill directional lights are not distance-attenuated, so they read predictably */}
       <directionalLight position={[5, 8, 5]} intensity={3} color="#fff3e6" />

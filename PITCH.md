@@ -1,7 +1,8 @@
-# MONOLITH — Pitch Doc
+**Vision:**
+I wanted to treat a plain red brick like a flagship luxury product—a serious tone for an absurd premise. To fight the 3-second attention span, my target was to keep users constantly engaged. I achieved this by building a draggable 3D brick, a smooth-scrolling manifesto, and a "Stack the Monolith" mini-game, all styled with a premium, warm aesthetic.
 
-**Vision:** Sell a plain red brick like it's a flagship luxury launch — dead-serious tone, absurd premise. The target was to never let the 3-second-attention-span visitor go idle: a spinning, draggable 3D brick, a GSAP-pinned scroll manifesto, and a one-tap "Stack the Monolith" mini-game, wrapped in a kiln-lit premium aesthetic.
+**Tools & Prompting Style:**
+I built the site entirely using AI. Instead of one giant prompt, I worked iteratively, going section-by-section: first the 3D hero, then the scroll engine, and finally the game. My prompting style was highly specific and corrective. Whenever an issue popped up, I gave targeted instructions like, "fix the scroll jump on the language toggle" rather than starting over.
 
-**Tools & prompting style:** Built end-to-end in Claude Code, section-by-section — hero/3D, then scroll engine, then game, then polish — using direct, specific corrections rather than one giant prompt (e.g. "fix the scroll jump on language toggle," "use the verified Resend domain"). Bilingual (English/Bangla) support and a working order-email flow came as follow-up passes.
-
-**Satisfaction:** Very happy — it hits all three interactivity requirements without feeling cluttered, and the smooth-scroll + 3D combo feels premium rather than gimmicky. Next, I'd tune mobile game feel and add subtle sound.
+**Satisfaction:**
+I’m really proud of how it turned out! It hits all the interactivity requirements—3D, scrolling, and gaming—without feeling overwhelming. The site actually feels premium, and everything runs smoothly.

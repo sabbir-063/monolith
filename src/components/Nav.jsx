@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext.jsx'
 
 const LINKS = [
   { id: 'manifesto', key: 'nav_manifesto' },
+  { id: 'craft', key: 'nav_craftsmanship' },
   { id: 'specs', key: 'nav_specs' },
   { id: 'play', key: 'nav_play' },
 ]

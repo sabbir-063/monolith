@@ -2,6 +2,7 @@ export const translations = {
   en: {
     // Nav
     nav_manifesto: "Manifesto",
+    nav_craftsmanship: "The Making",
     nav_specs: "Specs",
     nav_play: "Play",
     nav_reserve: "Reserve",
@@ -175,6 +176,7 @@ export const translations = {
   bn: {
     // Nav
     nav_manifesto: "ঘোষণাপত্র",
+    nav_craftsmanship: "নির্মাণ শৈলী",
     nav_specs: "স্পেসিফিকেশন",
     nav_play: "খেলুন",
     nav_reserve: "রিজার্ভ",

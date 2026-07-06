@@ -24,6 +24,14 @@
   to   { opacity: 1;    transform: scale(1.05); }
 }
 
+/* off-screen: stop the infinite decorative animations */
+.hero--idle .hero__bg,
+.hero--idle .embers__p,
+.hero--idle .hero__scroll-line,
+.hero--idle .brick-hud::before {
+  animation-play-state: paused;
+}
+
 /* full-bleed 3D layer — the cinematic (chip flight, halo, sparks) plays
    across the entire hero; CameraRig keeps the brick over .hero__stage */
 .hero__canvas {

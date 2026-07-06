@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -14,6 +14,17 @@ export default function Hero({ onReserve, reduced }) {
   const heroRef = useRef(null)
   // invisible layout rect the full-bleed canvas aims its camera at
   const stageAnchorRef = useRef(null)
+  const [visible, setVisible] = useState(true)
+
+  // pause the infinite decorative animations (kiln glow, embers) while
+  // the hero is scrolled out of view
+  useEffect(() => {
+    const el = heroRef.current
+    if (!el) return
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   // Parallax exit — the copy drifts up slightly as you scroll into the
   // manifesto. The brick stage is left alone so it stays fully visible.
@@ -31,7 +42,7 @@ export default function Hero({ onReserve, reduced }) {
   }, [reduced])
 
   return (
-    <header className="hero" id="top" ref={heroRef}>
+    <header className={`hero ${visible ? '' : 'hero--idle'}`} id="top" ref={heroRef}>
       <div className="hero__bg" aria-hidden="true" />
       {!reduced && <Embers count={16} />}
 

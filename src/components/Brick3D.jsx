@@ -355,10 +355,29 @@ function SmartBrickScene({ reduced, labels }) {
 }
 
 export default function Brick3D({ reduced = false, labels = [], anchorRef = null }) {
+  // Pause the WebGL frameloop whenever the hero is scrolled out of view —
+  // otherwise autoRotate + the idle useFrame keep the GPU busy at 60fps
+  // for the whole page and fight the scroll for frame budget.
+  const wrapRef = useRef(null)
+  const [inView, setInView] = useState(true)
+
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: '100px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   return (
+    <div ref={wrapRef} style={{ width: '100%', height: '100%' }}>
     <Canvas
-      dpr={[1, 2]}
-      gl={{ alpha: true, antialias: true }}
+      frameloop={inView ? 'always' : 'never'}
+      dpr={[1, 1.5]}
+      gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
       camera={{ position: [3.75, 2.15, 4.95], fov: 32 }}
     >
       <CameraRig anchorRef={anchorRef} />
@@ -371,7 +390,8 @@ export default function Brick3D({ reduced = false, labels = [], anchorRef = null
 
       <SmartBrickScene reduced={reduced} labels={labels} />
 
-      <ContactShadows position={[0, -0.62, 0]} opacity={0.5} scale={9} blur={2.6} far={3.5} color="#000000" />
+      <ContactShadows position={[0, -0.62, 0]} opacity={0.5} scale={9} blur={2.6} far={3.5} resolution={256} color="#000000" />
     </Canvas>
+    </div>
   )
 }

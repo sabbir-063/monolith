@@ -88,8 +88,10 @@ export default function StackGame() {
     if (!fit) return
     let ctx = fit.ctx
     let raf
+    let running = false
 
     const draw = () => {
+      if (!running) return
       const g = game.current
       const canvas = canvasRef.current
       if (!canvas) return
@@ -131,10 +133,25 @@ export default function StackGame() {
       raf = requestAnimationFrame(draw)
     }
 
-    raf = requestAnimationFrame(draw)
+    // only run the loop while the canvas is actually on screen — a canvas
+    // rAF loop that never stops costs main-thread time on every scroll frame
+    const startLoop = () => {
+      if (running) return
+      running = true
+      raf = requestAnimationFrame(draw)
+    }
+    const stopLoop = () => {
+      running = false
+      cancelAnimationFrame(raf)
+    }
 
     // input
     const canvas = canvasRef.current
+    const io = new IntersectionObserver(
+      ([entry]) => (entry.isIntersecting ? startLoop() : stopLoop()),
+      { rootMargin: '60px' },
+    )
+    io.observe(canvas)
     const onPointer = (e) => { e.preventDefault(); action() }
     const onKey = (e) => {
       if (e.code !== 'Space' && e.code !== 'Enter') return
@@ -158,7 +175,8 @@ export default function StackGame() {
     ro.observe(canvas)
 
     return () => {
-      cancelAnimationFrame(raf)
+      stopLoop()
+      io.disconnect()
       canvas.removeEventListener('pointerdown', onPointer)
       window.removeEventListener('keydown', onKey)
       ro.disconnect()

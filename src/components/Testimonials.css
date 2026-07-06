@@ -7,6 +7,7 @@
   font-family: var(--font-mono); font-size: 0.82rem; letter-spacing: 0.22em; color: var(--bone-dim); white-space: nowrap;
 }
 .marquee:hover .marquee__track { animation-play-state: paused; }
+.marquee--off .marquee__track { animation-play-state: paused; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 .press__grid {

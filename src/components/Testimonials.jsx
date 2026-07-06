@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Reveal, useCardFx } from './primitives'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import './Testimonials.css'
@@ -5,6 +6,17 @@ import './Testimonials.css'
 export default function Testimonials() {
   const { t } = useLanguage()
   const fx = useCardFx(5)
+  const sectionRef = useRef(null)
+  const [marqueeOn, setMarqueeOn] = useState(false)
+
+  // run the marquee only while the section is on screen
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const io = new IntersectionObserver(([entry]) => setMarqueeOn(entry.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
   const pressData = [
     t('press_item1'),
@@ -22,8 +34,8 @@ export default function Testimonials() {
   ]
 
   return (
-    <section className="press section" id="press">
-      <Reveal className="marquee" aria-label="As seen in">
+    <section className="press section" id="press" ref={sectionRef}>
+      <Reveal className={`marquee ${marqueeOn ? '' : 'marquee--off'}`} aria-label="As seen in">
         <div className="marquee__track">
           {[...pressData, ...pressData].map((p, i) => (
             <span className="marquee__item" key={i}>{p}</span>

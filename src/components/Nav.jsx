@@ -64,7 +64,7 @@ export default function Nav({ onNavigate }) {
           <>মনো<span>লিথ</span></>
         )}
       </motion.a>
-      <div className="nav__links">
+      <div className="nav__center">
         {LINKS.map((l, i) => (
           <motion.a
             key={l.id}
@@ -85,6 +85,8 @@ export default function Nav({ onNavigate }) {
             )}
           </motion.a>
         ))}
+      </div>
+      <div className="nav__actions">
         <motion.a
           href="#reserve"
           className="btn btn--primary nav__cta"

@@ -15,6 +15,9 @@ export const translations = {
     hero_drag: "Drag to rotate",
     hero_scroll: "Scroll",
     hero_edition: "Edition",
+    hero_hud_humidity: "Humidity 47% — regulating",
+    hero_hud_thermal: "Thermal mass — active",
+    hero_hud_air: "Air quality 94 — pure",
 
     // Manifesto
     manifesto_eyebrow: "The Manifesto",
@@ -185,6 +188,9 @@ export const translations = {
     hero_drag: "ঘোরাতে ড্রাগ করুন",
     hero_scroll: "স্ক্রল",
     hero_edition: "সংস্করণ",
+    hero_hud_humidity: "আর্দ্রতা ৪৭% — নিয়ন্ত্রিত",
+    hero_hud_thermal: "তাপীয় ভর — সক্রিয়",
+    hero_hud_air: "বাতাসের মান ৯৪ — বিশুদ্ধ",
 
     // Manifesto
     manifesto_eyebrow: "ঘোষণাপত্র",

@@ -92,7 +92,10 @@ export default function Hero({ onReserve, reduced }) {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Brick3D reduced={reduced} />
+          <Brick3D
+            reduced={reduced}
+            labels={[t('hero_hud_humidity'), t('hero_hud_thermal'), t('hero_hud_air')]}
+          />
           <p className="hero__drag">{t('hero_drag')}</p>
         </motion.div>
       </div>

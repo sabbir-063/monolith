@@ -1,9 +1,28 @@
 import { Resend } from 'resend';
+import { sheets } from "../src/lib/googleSheets.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const BCC_EMAIL = 'sabbir.musfique01@gmail.com';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function getFormattedTimestamp(date = new Date()) {
+  const parts = {};
+  new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Dhaka",
+  }).formatToParts(date).forEach(({ type, value }) => {
+    parts[type] = value;
+  });
+
+  return `${parts.year}-${parts.month}-${parts.day}, ${parts.hour}:${parts.minute}:${parts.second} ${parts.dayPeriod}`;
+}
 
 function generateOrderId() {
   const year = new Date().getFullYear();
@@ -359,6 +378,79 @@ export default async function handler(req, res) {
     if (error) {
       console.error('[send-order] Resend error:', error);
       return res.status(500).json({ error: error.message });
+    }
+
+    // Google Sheets Order Logging
+    try {
+      const ip =
+        req.headers["x-forwarded-for"] ||
+        req.socket.remoteAddress ||
+        "Unknown";
+
+      const country =
+        req.headers["x-vercel-ip-country"] ||
+        "Unknown";
+
+      const rawUserAgent =
+        req.headers["user-agent"] ||
+        "Unknown";
+
+      // Parse user agent to extract browser and OS
+      let os = "Unknown";
+      if (rawUserAgent.includes("Windows NT")) {
+        os = "Windows";
+      } else if (rawUserAgent.includes("Macintosh") || rawUserAgent.includes("Mac OS X")) {
+        os = "macOS";
+      } else if (rawUserAgent.includes("Android")) {
+        os = "Android";
+      } else if (rawUserAgent.includes("iPhone") || rawUserAgent.includes("iPad") || rawUserAgent.includes("iPod")) {
+        os = "iOS";
+      } else if (rawUserAgent.includes("Linux")) {
+        os = "Linux";
+      }
+
+      let browser = "Unknown";
+      if (rawUserAgent.includes("Edg/")) {
+        browser = "Edge";
+      } else if (rawUserAgent.includes("Chrome/") && rawUserAgent.includes("Safari/")) {
+        browser = "Chrome";
+      } else if (rawUserAgent.includes("Safari/") && !rawUserAgent.includes("Chrome/")) {
+        browser = "Safari";
+      } else if (rawUserAgent.includes("Firefox/")) {
+        browser = "Firefox";
+      } else if (rawUserAgent.includes("MSIE") || rawUserAgent.includes("Trident/")) {
+        browser = "IE";
+      }
+
+      const formattedUserAgent = (browser === "Unknown" && os === "Unknown")
+        ? rawUserAgent
+        : `${browser} (${os})`;
+
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: "Orders!A:N",
+        valueInputOption: "USER_ENTERED",
+        requestBody: {
+          values: [[
+            getFormattedTimestamp(),
+            orderId,
+            String(name).trim(),
+            String(email).trim(),
+            finishName,
+            Number(quantity),
+            engrave || '',
+            Number(subtotal),
+            Number(engraveCost),
+            Number(total),
+            resolvedLang,
+            ip,
+            country,
+            formattedUserAgent,
+          ]],
+        },
+      });
+    } catch (sheetError) {
+      console.error('[send-order] Google Sheets logging failed:', sheetError);
     }
 
     return res.status(200).json({ orderId });

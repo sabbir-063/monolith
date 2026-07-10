@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Stamp, Reveal, segmentGraphemes } from './primitives'
 import { useLanguage } from '../context/LanguageContext.jsx'
 
@@ -17,6 +18,45 @@ function HoverWord({ text, color }) {
 
 export default function Footer({ notify }) {
   const { lang, t } = useLanguage()
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault()
+    const trimmedEmail = email.trim()
+    if (!trimmedEmail) return
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      notify(t('order_email_error') || 'Please enter a valid email address')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: trimmedEmail }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        notify(data.error || t('order_error_generic'))
+        return
+      }
+
+      notify(t('footer_newsletter_success'))
+      setEmail('')
+    } catch (error) {
+      console.error(error)
+      notify(t('order_error_generic'))
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <footer className="footer">
@@ -37,10 +77,24 @@ export default function Footer({ notify }) {
               )}
             </h3>
             <p>{t('footer_desc')}</p>
-            <div className="footer__news">
-              <input type="email" placeholder={t('footer_newsletter_placeholder')} aria-label="Email address" />
-              <button className="btn btn--primary" onClick={() => notify(t('footer_newsletter_success'))}>{t('footer_newsletter_btn')}</button>
-            </div>
+            <form className="footer__news" onSubmit={handleSubscribe}>
+              <input
+                type="email"
+                placeholder={t('footer_newsletter_placeholder')}
+                aria-label="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                required
+              />
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={loading}
+              >
+                {loading ? '...' : t('footer_newsletter_btn')}
+              </button>
+            </form>
           </Reveal>
 
           <div className="footer__cols">

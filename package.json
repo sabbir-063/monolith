@@ -10,11 +10,11 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-
   "dependencies": {
     "@react-three/drei": "^9.114.3",
     "@react-three/fiber": "^8.17.10",
     "framer-motion": "^11.11.17",
+    "googleapis": "^173.0.0",
     "gsap": "^3.12.5",
     "lenis": "^1.1.17",
     "react": "^18.3.1",

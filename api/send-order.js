@@ -107,6 +107,7 @@ function buildEmailHTML({ name, finishName, finishColor, quantity, engrave, subt
     footer:       '© MMXXVI মনোলিথ — লাক্সারির একটি বিদ্রূপাত্মক রূপ, ১০০০° সে. তাপমাত্রায় দগ্ধ।',
     brand1:       'মনো',
     brand2:       'লিথ',
+    visitWebsite: 'ওয়েবসাইটে যান',
   } : {
     greeting:     `Order confirmed, ${name}.`,
     subtitle:     'Your MONOLITH is being prepared.',
@@ -123,6 +124,7 @@ function buildEmailHTML({ name, finishName, finishColor, quantity, engrave, subt
     footer:       '© MMXXVI MONOLITH — A satire of luxury, fired at 1000°C.',
     brand1:       'MONO',
     brand2:       'LITH',
+    visitWebsite: 'Go to our website',
   };
 
   const qtyDisplay = isBn
@@ -261,8 +263,20 @@ function buildEmailHTML({ name, finishName, finishColor, quantity, engrave, subt
 
                 <!-- Total -->
                 <tr>
-                  <td style="padding:18px 0 0;color:#ece4d6;font-size:16px;font-weight:bold;">${L.totalLabel}</td>
-                  <td style="padding:18px 0 0;text-align:right;color:#e2562a;font-size:24px;font-weight:bold;font-family:Georgia,serif;">&#2547; ${formatMoney(total, lang)}</td>
+                  <td style="padding:18px 0 20px;color:#ece4d6;font-size:16px;font-weight:bold;">${L.totalLabel}</td>
+                  <td style="padding:18px 0 20px;text-align:right;color:#e2562a;font-size:24px;font-weight:bold;font-family:Georgia,serif;">&#2547; ${formatMoney(total, lang)}</td>
+                </tr>
+
+                <!-- Website Link -->
+                <tr>
+                  <td colspan="2" style="padding:20px 0 0;text-align:center;border-top:1px solid rgba(236,228,214,0.08);">
+                    <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:2px;color:#b9ad9b;text-transform:uppercase;">
+                      ${L.visitWebsite}: 
+                      <a href="https://monolith.sabbirmusfique.com.bd/" target="_blank" style="color:#e2562a;text-decoration:none;font-weight:bold;text-transform:none;">
+                        monolith.sabbirmusfique.com.bd
+                      </a>
+                    </p>
+                  </td>
                 </tr>
 
               </table>

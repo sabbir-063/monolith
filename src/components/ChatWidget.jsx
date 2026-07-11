@@ -85,6 +85,7 @@ export default function ChatWidget() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasPulse, setHasPulse] = useState(true); // Glimmer pulse on the trigger button until first opened
+  const [contextChips, setContextChips] = useState(null);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -94,7 +95,7 @@ export default function ChatWidget() {
   // Suggested starting chips based on language
   const chips = lang === 'en' 
     ? [
-        'How do I order a MONOLITH?',
+        'I want to order a MONOLITH brick',
         'What are the finishes and prices?',
         'Can I engrave my brick?',
         'Why is it offline always?',
@@ -102,7 +103,7 @@ export default function ChatWidget() {
         'Can I play the stack game?',
       ]
     : [
-        'মনোলিথ কিভাবে অর্ডার করব?',
+        'আমি একটি মনোলিথ ইট অর্ডার করতে চাই',
         'ফিনিশ ও দামগুলো কী কী?',
         'আমি কি ইটে খোদাই করতে পারি?',
         'এটি কেন সব সময় অফলাইন?',
@@ -192,6 +193,7 @@ export default function ChatWidget() {
         timestamp: new Date().toLocaleTimeString(lang === 'bn' ? 'bn-BD' : 'en-US', { hour: '2-digit', minute: '2-digit' }),
       }
     ]);
+    setContextChips(null);
     setIsLoading(false);
   };
 
@@ -206,8 +208,103 @@ export default function ChatWidget() {
     }
   };
 
+  const handleTriggerOrder = async (payload, messageId) => {
+    const finishMap = {
+      oxblood: { name: "Classic Oxblood", color: "#9b2d20", price: 24000 },
+      matte: { name: "Matte Obsidian", color: "#241410", price: 31000 },
+      kiln: { name: "Kiln Orange", color: "#e2562a", price: 38000 }
+    };
+    
+    const resolvedFinish = finishMap[payload.finish] || finishMap.oxblood;
+    const qty = Number(payload.quantity) || 1;
+    const subtotal = resolvedFinish.price * qty;
+    const engraveCost = payload.engraving && payload.engraving.trim() ? 4000 * qty : 0;
+    const total = subtotal + engraveCost;
+
+    setMessages(prev => prev.map(m => {
+      if (m.id === messageId) {
+        return {
+          ...m,
+          orderCard: {
+            status: 'pending',
+            name: payload.name,
+            finish: resolvedFinish.name,
+            quantity: qty,
+            engraving: payload.engraving || '',
+            total: total
+          }
+        };
+      }
+      return m;
+    }));
+
+    try {
+      const response = await fetch('/api/send-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: payload.name,
+          email: payload.email,
+          finishName: resolvedFinish.name,
+          finishColor: resolvedFinish.color,
+          quantity: qty,
+          engrave: payload.engraving || '',
+          subtotal,
+          engraveCost,
+          total,
+          lang: payload.lang || 'en'
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to place order');
+      }
+
+      const orderResult = await response.json();
+      const orderId = orderResult.orderId;
+
+      setMessages(prev => prev.map(m => {
+        if (m.id === messageId) {
+          return {
+            ...m,
+            text: lang === 'bn' 
+              ? `অর্ডার নিশ্চিত করা হয়েছে! আপনার অর্ডার আইডি: **${orderId}**। একটি নিশ্চিতকরণ ইমেল পাঠানো হয়েছে।` 
+              : `Order confirmed! Your Order ID is **${orderId}**. A confirmation email has been sent.`,
+            orderCard: {
+              ...m.orderCard,
+              status: 'success',
+              orderId
+            }
+          };
+        }
+        return m;
+      }));
+
+    } catch (err) {
+      console.error("Direct order failure:", err);
+      setMessages(prev => prev.map(m => {
+        if (m.id === messageId) {
+          return {
+            ...m,
+            orderCard: {
+              ...m.orderCard,
+              status: 'error',
+              errorMsg: err.message || 'Something went wrong'
+            }
+          };
+        }
+        return m;
+      }));
+    }
+  };
+
   const handleSendMessage = async (textToSend) => {
     if (!textToSend.trim() || isLoading) return;
+
+    setContextChips(null);
 
     // Abort any existing ongoing requests
     if (abortControllerRef.current) {
@@ -263,13 +360,40 @@ export default function ChatWidget() {
       }
 
       const data = await res.json();
-      const fullText = data.text || '';
+      let fullText = data.text || '';
 
       if (fullText.startsWith('[ERROR]:')) {
         throw new Error(fullText.replace('[ERROR]:', '').trim());
       }
 
       trackChatMessage('ai', fullText);
+
+      // Extract [CHIPS: ...]
+      let extractedChips = null;
+      const chipsRegex = /\[CHIPS:\s*(.*?)\]/;
+      const chipsMatch = fullText.match(chipsRegex);
+      if (chipsMatch) {
+        extractedChips = chipsMatch[1].split('|').map(s => s.trim());
+        fullText = fullText.replace(chipsRegex, '').trim();
+      }
+
+      // Extract [TRIGGER_ORDER: ...]
+      let orderPayload = null;
+      const orderRegex = /\[TRIGGER_ORDER:\s*(.*?)\]/;
+      const orderMatch = fullText.match(orderRegex);
+      if (orderMatch) {
+        const payloadStr = orderMatch[1];
+        const pairs = {};
+        const pairRegex = /(\w+)="([^"]*)"|(\w+)=(\d+)/g;
+        let match;
+        while ((match = pairRegex.exec(payloadStr)) !== null) {
+          const key = match[1] || match[3];
+          const val = match[2] !== undefined ? match[2] : Number(match[4]);
+          pairs[key] = val;
+        }
+        orderPayload = pairs;
+        fullText = fullText.replace(orderRegex, '').trim();
+      }
 
       const aiMessageId = `ai-${Date.now()}`;
 
@@ -305,8 +429,22 @@ export default function ChatWidget() {
           if (currentIdx >= fullText.length) {
             clearInterval(typingIntervalRef.current);
             typingIntervalRef.current = null;
+            if (extractedChips) {
+              setContextChips(extractedChips);
+            }
+            if (orderPayload) {
+              handleTriggerOrder(orderPayload, aiMessageId);
+            }
           }
         }, 15); // 15ms interval
+      } else {
+        // Empty text but still has tags/chips
+        if (extractedChips) {
+          setContextChips(extractedChips);
+        }
+        if (orderPayload) {
+          handleTriggerOrder(orderPayload, aiMessageId);
+        }
       }
 
       if (abortControllerRef.current === controller) {
@@ -389,10 +527,55 @@ export default function ChatWidget() {
                   key={m.id}
                   className={`chat-widget__msg-wrapper chat-widget__msg-wrapper--${m.role}`}
                 >
-                  <div 
-                    className={`chat-widget__msg chat-widget__msg--${m.role}`}
-                    dangerouslySetInnerHTML={{ __html: formatMessage(m.text) }}
-                  />
+                  {m.text && (
+                    <div 
+                      className={`chat-widget__msg chat-widget__msg--${m.role}`}
+                      dangerouslySetInnerHTML={{ __html: formatMessage(m.text) }}
+                    />
+                  )}
+
+                  {/* Custom Order Confirmation Card */}
+                  {m.orderCard && (
+                    <div className={`chat-widget__order-card chat-widget__order-card--${m.orderCard.status}`}>
+                      {m.orderCard.status === 'pending' && (
+                        <div className="chat-widget__order-pending">
+                          <div className="chat-widget__order-spinner" />
+                          <span>Processing reservation...</span>
+                        </div>
+                      )}
+                      
+                      {m.orderCard.status === 'success' && (
+                        <div className="chat-widget__order-success">
+                          <div className="chat-widget__order-badge">✓ RESERVED</div>
+                          <div className="chat-widget__order-id">Order ID: {m.orderCard.orderId}</div>
+                          <div className="chat-widget__order-divider" />
+                          <div className="chat-widget__order-details">
+                            <div><span>Finish:</span> <span>{m.orderCard.finish}</span></div>
+                            <div><span>Quantity:</span> <span>{m.orderCard.quantity}</span></div>
+                            {m.orderCard.engraving && (
+                              <div><span>Engraving:</span> <span className="chat-widget__order-engrave">"{m.orderCard.engraving}"</span></div>
+                            )}
+                          </div>
+                          <div className="chat-widget__order-divider" />
+                          <div className="chat-widget__order-total">
+                            <span>Total:</span> <span>৳{m.orderCard.total.toLocaleString()}</span>
+                          </div>
+                          <div className="chat-widget__order-note">
+                            A confirmation email has been dispatched.
+                          </div>
+                        </div>
+                      )}
+
+                      {m.orderCard.status === 'error' && (
+                        <div className="chat-widget__order-error">
+                          <div className="chat-widget__order-error-title">Reservation Failed</div>
+                          <div className="chat-widget__order-error-msg">{m.orderCard.errorMsg}</div>
+                          <div className="chat-widget__order-error-sub">Please try again or contact support.</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="chat-widget__time">{m.timestamp}</div>
                 </div>
               ))}
@@ -412,12 +595,14 @@ export default function ChatWidget() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Suggested Chips (Only show when there is no user input activity in chat yet) */}
-            {messages.length === 1 && !isLoading && (
+            {/* Context/Suggestion Chips */}
+            {((contextChips && contextChips.length > 0) || (messages.length === 1 && !isLoading)) && (
               <div className="chat-widget__chips-container" data-lenis-prevent>
-                <div className="chat-widget__chips-title">{t.chipsTitle}</div>
+                <div className="chat-widget__chips-title">
+                  {contextChips ? 'CHOOSE AN OPTION' : t.chipsTitle}
+                </div>
                 <div className="chat-widget__chips">
-                  {chips.map((chip, idx) => (
+                  {(contextChips || chips).map((chip, idx) => (
                     <button
                       key={idx}
                       className="chat-widget__chip"

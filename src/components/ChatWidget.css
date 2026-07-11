@@ -308,6 +308,7 @@
 .chat-widget__footer {
   border-top: 1px solid var(--line);
   background: var(--clay-850);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .chat-widget__form {
@@ -398,16 +399,60 @@
   .chat-widget__window {
     position: fixed;
     top: 0;
+    top: var(--visual-top, 0px);
     left: 0;
-    right: 0;
-    bottom: 0;
+    right: auto;
+    bottom: auto;
     width: 100vw;
     height: 100vh;
+    height: var(--visual-height, 100dvh);
     max-width: 100vw;
     max-height: 100vh;
+    max-height: var(--visual-height, 100dvh);
     border: none;
     border-radius: 0;
     background: var(--clay-900);
+  }
+
+  .chat-widget__body {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  /* Sleek horizontal suggestion chips on mobile to save precious vertical space */
+  .chat-widget__chips-container {
+    padding: 0.5rem;
+  }
+
+  .chat-widget__chips {
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.25rem;
+  }
+
+  .chat-widget__chips::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .chat-widget__chips::-webkit-scrollbar-thumb {
+    background: rgba(226, 86, 42, 0.3);
+    border-radius: 2px;
+  }
+
+  .chat-widget__chip {
+    width: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.72rem;
+  }
+
+  .chat-widget__input {
+    font-size: 16px; /* Prevent iOS zoom-on-focus issue */
+    padding: 0.85rem 1rem;
   }
 }
 

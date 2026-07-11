@@ -92,6 +92,35 @@ export default function ChatWidget() {
   const abortControllerRef = useRef(null);
   const typingIntervalRef = useRef(null);
 
+  // Handle mobile visual viewport resizing to keep input visible above keyboard
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleViewportChange = () => {
+      if (!window.visualViewport) return;
+      const height = window.visualViewport.height;
+      const offsetTop = window.visualViewport.offsetTop;
+      
+      document.documentElement.style.setProperty('--visual-height', `${height}px`);
+      document.documentElement.style.setProperty('--visual-top', `${offsetTop}px`);
+    };
+
+    const visualViewport = window.visualViewport;
+    if (visualViewport) {
+      visualViewport.addEventListener('resize', handleViewportChange);
+      visualViewport.addEventListener('scroll', handleViewportChange);
+      // Run once initially
+      handleViewportChange();
+    }
+
+    return () => {
+      if (visualViewport) {
+        visualViewport.removeEventListener('resize', handleViewportChange);
+        visualViewport.removeEventListener('scroll', handleViewportChange);
+      }
+    };
+  }, []);
+
   // Suggested starting chips based on language
   const chips = lang === 'en' 
     ? [

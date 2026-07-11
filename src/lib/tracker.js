@@ -76,6 +76,31 @@ export const trackEvent = async (eventType, eventDetail) => {
   }
 };
 
+export const trackChatMessage = async (sender, messageText) => {
+  if (typeof window === 'undefined') return;
+
+  const payload = {
+    userId,
+    sessionId,
+    sender,
+    message: messageText,
+    pageUrl: window.location.href,
+    screenSize: `${window.innerWidth}x${window.innerHeight}`,
+    language: navigator.language || 'Unknown',
+  };
+
+  try {
+    await fetch('/api/chat-track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    });
+  } catch (err) {
+    console.error('Failed to send chat tracking event:', err);
+  }
+};
+
 // Auto track page views and click events on elements
 export const initTracker = () => {
   if (typeof window === 'undefined') return;

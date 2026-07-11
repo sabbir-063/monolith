@@ -13,6 +13,7 @@ import StackGame from './components/StackGame'
 import Testimonials from './components/Testimonials'
 import Configurator from './components/Configurator'
 import Footer from './components/Footer'
+import ChatWidget from './components/ChatWidget'
 import { usePrefersReducedMotion } from './hooks/useReducedMotion'
 import { initTracker } from './lib/tracker'
 
@@ -83,6 +84,7 @@ export default function App() {
       </main>
 
       <Footer notify={notify} />
+      <ChatWidget />
 
       <AnimatePresence>
         {toast && (

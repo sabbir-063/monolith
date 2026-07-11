@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import './OrderModal.css'
+import { trackEvent } from '../lib/tracker'
 
 const ENGRAVE_COST = 4000
 
@@ -30,6 +31,13 @@ export default function OrderModal({ isOpen, onClose, finish, quantity, engrave 
     document.body.style.overflow = isOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [isOpen])
+
+  // ── Track Modal View Event ───────────────────────────────────────────────
+  useEffect(() => {
+    if (isOpen && finish) {
+      trackEvent('modal_open', `Reserve Modal Opened: Finish: ${finish.name}, Qty: ${quantity}`)
+    }
+  }, [isOpen, finish, quantity])
 
   // ── Close on ESC ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -72,6 +80,8 @@ export default function OrderModal({ isOpen, onClose, finish, quantity, engrave 
     setStatus('loading')
     setErrorMsg('')
 
+    trackEvent('checkout_submit_attempt', `Name: ${name.trim()}, Email: ${email.trim()}, Finish: ${finish.name}, Qty: ${quantity}, Total: ৳${total}`)
+
     try {
       const res = await fetch('/api/send-order', {
         method:  'POST',
@@ -95,11 +105,13 @@ export default function OrderModal({ isOpen, onClose, finish, quantity, engrave 
       if (!res.ok) {
         setStatus('error')
         setErrorMsg(data.error || t('order_error_generic'))
+        trackEvent('checkout_failure', `Error: ${data.error || t('order_error_generic')}, Name: ${name.trim()}, Email: ${email.trim()}`)
         return
       }
 
       setOrderId(data.orderId)
       setStatus('success')
+      trackEvent('checkout_success', `Order ID: ${data.orderId}, Name: ${name.trim()}, Email: ${email.trim()}, Total: ৳${total}`)
 
       // Confetti burst
       setConfetti(
@@ -111,9 +123,10 @@ export default function OrderModal({ isOpen, onClose, finish, quantity, engrave 
           duration: (0.7 + Math.random() * 0.7).toFixed(2),
         }))
       )
-    } catch {
+    } catch (err) {
       setStatus('error')
       setErrorMsg(t('order_error_generic'))
+      trackEvent('checkout_failure', `Exception thrown, Name: ${name.trim()}, Email: ${email.trim()}`)
     }
   }, [validate, name, email, finish, quantity, engrave, subtotal, engraveCost, total, lang, t])
 
@@ -166,7 +179,12 @@ export default function OrderModal({ isOpen, onClose, finish, quantity, engrave 
                 <span>{lang === 'en' ? 'MONO' : 'মনো'}</span>
                 {lang === 'en' ? 'LITH' : 'লিথ'}
               </p>
-              <button className="modal__close" onClick={onClose} aria-label="Close modal">✕</button>
+              <button
+                className="modal__close"
+                onClick={onClose}
+                aria-label="Close modal"
+                data-track="Checkout Modal: Close Icon Button"
+              >✕</button>
             </div>
 
             {/* ── SUCCESS state ── */}
@@ -194,7 +212,11 @@ export default function OrderModal({ isOpen, onClose, finish, quantity, engrave 
                   <strong>{orderId}</strong>
                 </div>
 
-                <button className="btn btn--ghost modal__done" onClick={onClose}>
+                <button
+                  className="btn btn--ghost modal__done"
+                  onClick={onClose}
+                  data-track="Checkout Modal: Success Done Button"
+                >
                   {t('order_close')}
                 </button>
               </div>

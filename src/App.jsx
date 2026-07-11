@@ -14,6 +14,7 @@ import Testimonials from './components/Testimonials'
 import Configurator from './components/Configurator'
 import Footer from './components/Footer'
 import { usePrefersReducedMotion } from './hooks/useReducedMotion'
+import { initTracker } from './lib/tracker'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -22,6 +23,11 @@ export default function App() {
   const lenisRef = useRef(null)
   const [toast, setToast] = useState(null)
   const toastTimer = useRef(null)
+
+  // Initialize analytics tracker on mount
+  useEffect(() => {
+    initTracker()
+  }, [])
 
   // Smooth scroll + GSAP ScrollTrigger sync (skipped when reduced motion is on)
   useEffect(() => {

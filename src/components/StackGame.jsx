@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import './StackGame.css'
+import { trackEvent } from '../lib/tracker'
 
 const BRICK_H = 26
 const PALETTE = ['#e2562a', '#c2401f', '#9b2d20', '#7c2418', '#b5361f']
@@ -49,6 +50,7 @@ export default function StackGame() {
     }
     setScore(0)
     setPhaseBoth('playing')
+    trackEvent('game_start', 'Stack Game Started')
   }, [fitCanvas])
 
   const drop = useCallback(() => {
@@ -62,7 +64,12 @@ export default function StackGame() {
 
     if (overlap <= 4) {
       setPhaseBoth('over')
-      setBest((b) => Math.max(b, g.bricks.length - 1))
+      const finalScore = g.bricks.length - 1
+      setBest((b) => {
+        const nextBest = Math.max(b, finalScore)
+        trackEvent('game_over', `Score: ${finalScore}, Best: ${nextBest}`)
+        return nextBest
+      })
       return
     }
 

@@ -4,6 +4,7 @@ import { Reveal, Stamp, Ticker } from './primitives'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import OrderModal from './OrderModal.jsx'
 import './Configurator.css'
+import { trackEvent } from '../lib/tracker'
 
 const FINISHES = [
   { id: 'oxblood', color: '#9b2d20', price: 24000 },
@@ -38,7 +39,11 @@ export default function Configurator({ notify }) {
 
   const changeQty = (delta) => {
     qtyDir.current = delta
-    setQuantity((q) => Math.min(99, Math.max(1, q + delta)))
+    setQuantity((q) => {
+      const nextQ = Math.min(99, Math.max(1, q + delta))
+      trackEvent('configurator_change_quantity', `Changed from ${q} to ${nextQ}`)
+      return nextQ;
+    })
   }
 
   const addToCart = useCallback(() => {
@@ -52,9 +57,12 @@ export default function Configurator({ notify }) {
     setBursts((b) => [...b, { id, particles, color: finish.color }])
     setTimeout(() => setBursts((b) => b.filter((x) => x.id !== id)), 900)
 
+    // Track configurator CTA submit
+    trackEvent('configurator_reserve_click', `Finish: ${finishId}, Qty: ${quantity}, Engrave: "${engrave.trim() || 'none'}"`)
+
     // Open modal
     setShowModal(true)
-  }, [finish])
+  }, [finish, finishId, quantity, engrave])
 
   return (
     <>
@@ -123,7 +131,10 @@ export default function Configurator({ notify }) {
                   <button
                     key={f.id}
                     className={`config__chip ${f.id === finishId ? 'is-active' : ''}`}
-                    onClick={() => setFinishId(f.id)}
+                    onClick={() => {
+                      setFinishId(f.id)
+                      trackEvent('configurator_select_finish', f.id)
+                    }}
                     aria-pressed={f.id === finishId}
                   >
                     {f.id === finishId && (

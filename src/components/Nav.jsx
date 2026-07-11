@@ -72,6 +72,7 @@ export default function Nav({ onNavigate }) {
             href={`#${l.id}`}
             className={`nav__link ${active === l.id ? 'is-active' : ''}`}
             onClick={go(`#${l.id}`)}
+            data-track={`Nav Link: ${l.id}`}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 + i * 0.09 }}
@@ -92,6 +93,7 @@ export default function Nav({ onNavigate }) {
           href="#reserve"
           className="btn btn--primary nav__cta"
           onClick={go('#reserve')}
+          data-track="Nav CTA: Reserve"
           whileTap={{ scale: 0.96 }}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -102,6 +104,7 @@ export default function Nav({ onNavigate }) {
         <motion.button
           className="nav__link"
           onClick={toggleLang}
+          data-track={`Nav Language Switch: to ${lang === 'en' ? 'BN' : 'EN'}`}
           aria-label={lang === 'en' ? 'বাংলায় দেখুন' : 'Switch to English'}
           style={{ fontWeight: 600, color: 'var(--kiln)' }}
           initial={{ opacity: 0, y: -10 }}
@@ -136,16 +139,23 @@ export default function Nav({ onNavigate }) {
                 href={`#${l.id}`}
                 className={`nav__mobile-link ${active === l.id ? 'is-active' : ''}`}
                 onClick={go(`#${l.id}`)}
+                data-track={`Nav Mobile Link: ${l.id}`}
               >
                 {t(l.key)}
               </a>
             ))}
-            <a href="#reserve" className="btn btn--primary nav__mobile-cta" onClick={go('#reserve')}>
+            <a
+              href="#reserve"
+              className="btn btn--primary nav__mobile-cta"
+              onClick={go('#reserve')}
+              data-track="Nav Mobile CTA: Reserve"
+            >
               {t('nav_reserve')}
             </a>
             <button
               className="nav__mobile-link nav__mobile-lang"
               onClick={toggleLang}
+              data-track={`Nav Mobile Language Switch: to ${lang === 'en' ? 'BN' : 'EN'}`}
               aria-label={lang === 'en' ? 'বাংলায় দেখুন' : 'Switch to English'}
             >
               {lang === 'en' ? 'বাংলা' : 'English'}

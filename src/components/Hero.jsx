@@ -106,7 +106,11 @@ export default function Hero({ onReserve, reduced }) {
             transition={{ duration: 0.8, delay: 0.7 }}
           >
             <Magnetic>
-              <button className="btn btn--primary" onClick={onReserve}>
+              <button
+                className="btn btn--primary"
+                onClick={onReserve}
+                data-track="Hero: Reserve CTA"
+              >
                 {t('hero_reserve')} <span className="btn__arrow">&rarr;</span>
               </button>
             </Magnetic>
@@ -126,7 +130,11 @@ export default function Hero({ onReserve, reduced }) {
         transition={{ duration: 1, delay: 1.1 }}
       >
         <Stamp />
-        <a className="hero__scroll" href="#manifesto">
+        <a
+          className="hero__scroll"
+          href="#manifesto"
+          data-track="Hero: Scroll Indicator Link"
+        >
           <span>{t('hero_scroll')}</span>
           <span className="hero__scroll-line" aria-hidden="true" />
         </a>

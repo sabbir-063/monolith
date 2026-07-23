@@ -20,6 +20,10 @@ Meet MONOLITH. The last brick you'll ever need. 👇
 🌐 Live: https://monolith.sabbirmusfique.com.bd
 💻 Code: https://github.com/sabbir-063/monolith
 
+A massive thanks to Grameenphone Ltd (Grameenphone Academy) for designing this challenge and pushing us to think beyond prompts — to build practical, real-world solutions with AI. 🚀
+
+And a special shoutout to Ashraful Alam, CUA™ Bhai, and Mahazabin Maisha Apu. Thank you all for your incredible support and guidance throughout this journey! 🙌
+
 Serious question: would you buy a ৳24,000 brick? Tell me in the comments. 👇
 
 #GrameenphoneAcademy #GetFutureReady #AI #VibeCoding #WebDevelopment #ThreeJS #CreativeCoding #FrontendDevelopment #BuildInPublic #Bangladesh #UIUX #WebDesign #GenerativeAI #TechBangladesh

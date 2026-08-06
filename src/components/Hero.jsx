@@ -6,6 +6,7 @@ import Brick3D from './Brick3D'
 import { Stamp, SplitChars, Magnetic, Embers } from './primitives'
 import { useLanguage } from '../context/LanguageContext.jsx'
 import './Hero.css'
+import InstallButton from './InstallButton'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -114,6 +115,9 @@ export default function Hero({ onReserve, reduced }) {
                 {t('hero_reserve')} <span className="btn__arrow">&rarr;</span>
               </button>
             </Magnetic>
+
+            <InstallButton />
+            
             <span className="hero__price">{t('hero_price_from')} <strong>৳ {(24000).toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US')}</strong></span>
           </motion.div>
         </div>
